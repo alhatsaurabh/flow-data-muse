@@ -21,7 +21,7 @@ const Hero = () => {
       <div className="container px-4 md:px-6 flex flex-col items-center text-center">
         <div className="mb-8">
           <Avatar className="w-40 h-40 border-4 border-primary/20">
-            <AvatarImage alt="Saurabh Alhat" src="/lovable-uploads/0b624833-0ead-4563-aab3-1abd6bde938f.jpg" className="object-none" />
+            <AvatarImage alt="Saurabh Alhat" src="/lovable-uploads/3ab82acf-8799-4d78-a428-1a9e58625ab3.jpg" className="object-cover" />
             <AvatarFallback>SA</AvatarFallback>
           </Avatar>
         </div>
@@ -31,13 +31,13 @@ const Hero = () => {
         </h1>
         
         <div className="flex items-center justify-center gap-4 mb-8">
-          <a href="https://github.com/alhatsaurabh" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
+          <a href="https://github.com/saurabhalhat" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
             <Github size={24} />
           </a>
-          <a href="https://linkedin.com/in/alhatsaurabh" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
+          <a href="https://linkedin.com/in/saurabhalhat" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
             <Linkedin size={24} />
           </a>
-          <a href="mailto:alhatsaurabh@gmail.com" className="text-muted-foreground hover:text-primary transition-colors">
+          <a href="mailto:contact@saurabhalhat.com" className="text-muted-foreground hover:text-primary transition-colors">
             <Mail size={24} />
           </a>
         </div>
