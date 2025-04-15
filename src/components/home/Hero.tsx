@@ -31,13 +31,13 @@ const Hero = () => {
         </h1>
         
         <div className="flex items-center justify-center gap-4 mb-8">
-          <a href="https://github.com/alhatsaurabh" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
+          <a href="https://github.com/saurabhalhat" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
             <Github size={24} />
           </a>
-          <a href="https://linkedin.com/in/alhatsaurabh" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
+          <a href="https://linkedin.com/in/saurabhalhat" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
             <Linkedin size={24} />
           </a>
-          <a href="mailto:alhatsaurabh@gmail.com" className="text-muted-foreground hover:text-primary transition-colors">
+          <a href="mailto:contact@saurabhalhat.com" className="text-muted-foreground hover:text-primary transition-colors">
             <Mail size={24} />
           </a>
         </div>
