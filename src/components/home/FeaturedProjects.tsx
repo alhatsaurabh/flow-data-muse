@@ -1,9 +1,10 @@
 
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, ExternalLink, Github } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 
 const FeaturedProjects = () => {
   const projects = [
@@ -14,6 +15,8 @@ const FeaturedProjects = () => {
       image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=2070',
       tags: ['Python', 'Tableau', 'SQL'],
       link: '/projects/ecommerce-analysis',
+      github: 'https://github.com/alhatsaurabh/ecommerce-analysis',
+      liveDemo: 'https://example.com/ecommerce-demo',
     },
     {
       id: 2,
@@ -22,6 +25,8 @@ const FeaturedProjects = () => {
       image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=2015',
       tags: ['R', 'Google Analytics', 'Data Studio'],
       link: '/projects/marketing-analysis',
+      github: 'https://github.com/alhatsaurabh/marketing-analysis',
+      liveDemo: 'https://example.com/marketing-demo',
     },
     {
       id: 3,
@@ -30,6 +35,8 @@ const FeaturedProjects = () => {
       image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=2070',
       tags: ['Python', 'Clustering', 'Tableau'],
       link: '/projects/customer-segmentation',
+      github: 'https://github.com/alhatsaurabh/customer-segmentation',
+      liveDemo: 'https://example.com/segmentation-demo',
     },
   ];
 
@@ -51,34 +58,70 @@ const FeaturedProjects = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {projects.map((project) => (
-            <Card key={project.id} className="overflow-hidden group border">
-              <div className="aspect-video relative overflow-hidden">
-                <img 
-                  src={project.image} 
-                  alt={project.title}
-                  className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-105"
-                />
-              </div>
-              <CardHeader>
-                <CardTitle>{project.title}</CardTitle>
-                <CardDescription className="line-clamp-2">{project.description}</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="flex flex-wrap gap-2">
-                  {project.tags.map((tag) => (
-                    <Badge key={tag} variant="secondary">{tag}</Badge>
-                  ))}
+          {projects.map((project, index) => (
+            <motion.div
+              key={project.id}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: index * 0.1 }}
+              viewport={{ once: true }}
+              whileHover={{ y: -5 }}
+              className="h-full"
+            >
+              <Card className="overflow-hidden group border h-full flex flex-col">
+                <div className="aspect-video relative overflow-hidden">
+                  <img 
+                    src={project.image} 
+                    alt={project.title}
+                    className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-3">
+                    {project.github && (
+                      <a 
+                        href={project.github} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="bg-white/20 p-2 rounded-full hover:bg-white/40 transition-colors"
+                        aria-label="View GitHub Repository"
+                      >
+                        <Github className="h-5 w-5 text-white" />
+                      </a>
+                    )}
+                    {project.liveDemo && (
+                      <a 
+                        href={project.liveDemo} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="bg-white/20 p-2 rounded-full hover:bg-white/40 transition-colors"
+                        aria-label="View Live Demo"
+                      >
+                        <ExternalLink className="h-5 w-5 text-white" />
+                      </a>
+                    )}
+                  </div>
                 </div>
-              </CardContent>
-              <CardFooter>
-                <Button asChild variant="ghost" className="gap-2">
-                  <Link to={project.link}>
-                    View Case Study <ArrowRight className="h-4 w-4" />
-                  </Link>
-                </Button>
-              </CardFooter>
-            </Card>
+                <CardHeader>
+                  <CardTitle>{project.title}</CardTitle>
+                  <CardDescription className="line-clamp-2">{project.description}</CardDescription>
+                </CardHeader>
+                <CardContent className="flex-grow">
+                  <div className="flex flex-wrap gap-2">
+                    {project.tags.map((tag) => (
+                      <Badge key={tag} variant="secondary" className="transition-all hover:bg-primary hover:text-primary-foreground">
+                        {tag}
+                      </Badge>
+                    ))}
+                  </div>
+                </CardContent>
+                <CardFooter>
+                  <Button asChild variant="ghost" className="gap-2 w-full justify-center">
+                    <Link to={project.link}>
+                      View Case Study <ArrowRight className="h-4 w-4" />
+                    </Link>
+                  </Button>
+                </CardFooter>
+              </Card>
+            </motion.div>
           ))}
         </div>
       </div>
