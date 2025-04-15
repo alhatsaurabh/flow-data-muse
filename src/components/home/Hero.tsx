@@ -1,7 +1,8 @@
 
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, Github, Mail, Linkedin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 const Hero = () => {
   const scrollToNextSection = () => {
@@ -12,7 +13,7 @@ const Hero = () => {
   };
 
   return (
-    <section className="relative min-h-screen flex flex-col justify-center py-24 overflow-hidden">
+    <section className="relative min-h-screen flex flex-col justify-center py-16 md:py-24 overflow-hidden">
       {/* Background gradient */}
       <div className="absolute inset-0 hero-gradient -z-10" />
       
@@ -20,14 +21,33 @@ const Hero = () => {
       <div className="absolute -right-20 top-1/4 w-80 h-80 bg-primary/10 rounded-full blur-3xl -z-10" />
       
       <div className="container px-4 md:px-6 flex flex-col items-center text-center">
-        <h1 className="font-bold tracking-tight text-4xl md:text-5xl lg:text-6xl mb-6">
-          Turning Data into
-          <span className="text-primary"> Actionable Insights</span>
+        <div className="mb-8">
+          <Avatar className="w-32 h-32 border-4 border-primary/20">
+            <AvatarImage src="https://images.unsplash.com/photo-1568602471122-7832951cc4c5?w=400&h=400&fit=crop&crop=faces" alt="Saurabh Alhat" />
+            <AvatarFallback>SA</AvatarFallback>
+          </Avatar>
+        </div>
+        
+        <h1 className="font-bold tracking-tight text-4xl md:text-5xl lg:text-6xl mb-4">
+          Hi, I'm <span className="text-primary">Saurabh Alhat</span>
         </h1>
         
+        <div className="flex items-center justify-center gap-4 mb-8">
+          <a href="https://github.com/saurabhalhat" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
+            <Github size={24} />
+          </a>
+          <a href="https://linkedin.com/in/saurabhalhat" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
+            <Linkedin size={24} />
+          </a>
+          <a href="mailto:contact@saurabhalhat.com" className="text-muted-foreground hover:text-primary transition-colors">
+            <Mail size={24} />
+          </a>
+        </div>
+        
         <p className="text-muted-foreground text-lg md:text-xl max-w-3xl mb-10">
-          Data analyst specializing in transforming complex data into clear, actionable insights.
-          Using advanced analytics to help businesses make data-driven decisions.
+          Data analyst specializing in <span className="text-primary font-medium">AI-driven insights</span>. 
+          I create innovative data projects with cutting-edge AI tools and integrate artificial intelligence 
+          into data analytics workflows to transform complex data into actionable intelligence.
         </p>
         
         <div className="flex flex-col sm:flex-row gap-4 mb-16">
@@ -55,7 +75,7 @@ const Hero = () => {
           </div>
           <div className="space-y-2">
             <p className="text-3xl md:text-4xl font-bold text-primary">15+</p>
-            <p className="text-sm text-muted-foreground">Data Tools</p>
+            <p className="text-sm text-muted-foreground">AI Tools</p>
           </div>
         </div>
         
