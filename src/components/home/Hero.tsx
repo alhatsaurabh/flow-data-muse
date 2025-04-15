@@ -22,7 +22,7 @@ const Hero = () => {
       
       <div className="container px-4 md:px-6 flex flex-col items-center text-center">
         <div className="mb-8">
-          <Avatar className="w-32 h-32 border-4 border-primary/20">
+          <Avatar className="w-40 h-40 border-4 border-primary/20">
             <AvatarImage src="https://images.unsplash.com/photo-1568602471122-7832951cc4c5?w=400&h=400&fit=crop&crop=faces" alt="Saurabh Alhat" />
             <AvatarFallback>SA</AvatarFallback>
           </Avatar>
