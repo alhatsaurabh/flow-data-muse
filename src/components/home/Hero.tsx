@@ -1,19 +1,17 @@
-
 import { ChevronDown, Github, Mail, Linkedin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-
 const Hero = () => {
   const scrollToNextSection = () => {
     const nextSection = document.getElementById('featured-section');
     if (nextSection) {
-      nextSection.scrollIntoView({ behavior: 'smooth' });
+      nextSection.scrollIntoView({
+        behavior: 'smooth'
+      });
     }
   };
-
-  return (
-    <section className="relative min-h-screen flex flex-col justify-center py-16 md:py-24 overflow-hidden">
+  return <section className="relative min-h-screen flex flex-col justify-center py-16 md:py-24 overflow-hidden">
       {/* Background gradient */}
       <div className="absolute inset-0 hero-gradient -z-10" />
       
@@ -23,7 +21,7 @@ const Hero = () => {
       <div className="container px-4 md:px-6 flex flex-col items-center text-center">
         <div className="mb-8">
           <Avatar className="w-40 h-40 border-4 border-primary/20">
-            <AvatarImage src="https://images.unsplash.com/photo-1568602471122-7832951cc4c5?w=400&h=400&fit=crop&crop=faces" alt="Saurabh Alhat" />
+            <AvatarImage alt="Saurabh Alhat" src="/lovable-uploads/3ab82acf-8799-4d78-a428-1a9e58625ab3.jpg" className="object-cover" />
             <AvatarFallback>SA</AvatarFallback>
           </Avatar>
         </div>
@@ -79,16 +77,10 @@ const Hero = () => {
           </div>
         </div>
         
-        <button 
-          onClick={scrollToNextSection}
-          className="animate-bounce p-2 rounded-full border mt-8"
-          aria-label="Scroll down"
-        >
+        <button onClick={scrollToNextSection} className="animate-bounce p-2 rounded-full border mt-8" aria-label="Scroll down">
           <ChevronDown className="h-5 w-5 text-muted-foreground" />
         </button>
       </div>
-    </section>
-  );
+    </section>;
 };
-
 export default Hero;
