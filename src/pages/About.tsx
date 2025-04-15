@@ -72,7 +72,7 @@ const About = () => {
               </Button>
             </div>
             <div className="relative">
-              <img alt="Professional headshot" src="/lovable-uploads/4b418ca2-ea2d-40d3-b6a0-4aa2572ef914.jpg" className="rounded-lg w-full max-w-md mx-auto shadow-lg object-cover" />
+              <img alt="Professional headshot" src="/lovable-uploads/d0fa852d-fd8e-4440-9b28-01801f40c0f1.jpg" className="rounded-lg w-full max-w-md mx-auto shadow-lg object-none" />
               {/* Decorative element */}
               <div className="absolute -z-10 -bottom-6 -right-6 w-full h-full border-2 border-primary rounded-lg" />
             </div>
