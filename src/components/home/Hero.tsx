@@ -1,19 +1,17 @@
-
 import { ChevronDown, Github, Mail, Linkedin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-
 const Hero = () => {
   const scrollToNextSection = () => {
     const nextSection = document.getElementById('featured-section');
     if (nextSection) {
-      nextSection.scrollIntoView({ behavior: 'smooth' });
+      nextSection.scrollIntoView({
+        behavior: 'smooth'
+      });
     }
   };
-
-  return (
-    <section className="relative min-h-screen flex flex-col justify-center py-16 md:py-24 overflow-hidden">
+  return <section className="relative min-h-screen flex flex-col justify-center py-16 md:py-24 overflow-hidden">
       {/* Background gradient */}
       <div className="absolute inset-0 hero-gradient -z-10" />
       
@@ -23,7 +21,7 @@ const Hero = () => {
       <div className="container px-4 md:px-6 flex flex-col items-center text-center">
         <div className="mb-8">
           <Avatar className="w-40 h-40 border-4 border-primary/20">
-            <AvatarImage src="https://images.unsplash.com/photo-1568602471122-7832951cc4c5?w=400&h=400&fit=crop&crop=faces" alt="Saurabh Alhat" />
+            <AvatarImage alt="Saurabh Alhat" src="/lovable-uploads/0b624833-0ead-4563-aab3-1abd6bde938f.jpg" className="object-none" />
             <AvatarFallback>SA</AvatarFallback>
           </Avatar>
         </div>
@@ -33,13 +31,13 @@ const Hero = () => {
         </h1>
         
         <div className="flex items-center justify-center gap-4 mb-8">
-          <a href="https://github.com/saurabhalhat" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
+          <a href="https://github.com/alhatsaurabh" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
             <Github size={24} />
           </a>
-          <a href="https://linkedin.com/in/saurabhalhat" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
+          <a href="https://linkedin.com/in/alhatsaurabh" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
             <Linkedin size={24} />
           </a>
-          <a href="mailto:contact@saurabhalhat.com" className="text-muted-foreground hover:text-primary transition-colors">
+          <a href="mailto:alhatsaurabh@gmail.com" className="text-muted-foreground hover:text-primary transition-colors">
             <Mail size={24} />
           </a>
         </div>
@@ -79,16 +77,10 @@ const Hero = () => {
           </div>
         </div>
         
-        <button 
-          onClick={scrollToNextSection}
-          className="animate-bounce p-2 rounded-full border mt-8"
-          aria-label="Scroll down"
-        >
+        <button onClick={scrollToNextSection} className="animate-bounce p-2 rounded-full border mt-8" aria-label="Scroll down">
           <ChevronDown className="h-5 w-5 text-muted-foreground" />
         </button>
       </div>
-    </section>
-  );
+    </section>;
 };
-
 export default Hero;
