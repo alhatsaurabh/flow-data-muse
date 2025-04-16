@@ -5,6 +5,7 @@ import { Moon, Sun, Menu, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTheme } from '@/components/theme/ThemeProvider';
 import { cn } from '@/lib/utils';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const Header = () => {
   const { theme, setTheme } = useTheme();
@@ -53,6 +54,47 @@ const Header = () => {
     { name: 'Blog', path: '/blog' },
     { name: 'Contact', path: '/contact' },
   ];
+
+  // Animation variants for mobile menu
+  const menuVariants = {
+    hidden: { 
+      opacity: 0,
+      y: -20
+    },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.2,
+        staggerChildren: 0.1,
+        when: "beforeChildren"
+      }
+    },
+    exit: {
+      opacity: 0,
+      y: -20,
+      transition: {
+        duration: 0.2
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { 
+      opacity: 0,
+      y: 20
+    },
+    visible: { 
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.3 }
+    },
+    exit: {
+      opacity: 0,
+      y: 20,
+      transition: { duration: 0.2 }
+    }
+  };
 
   return (
     <header 
@@ -132,27 +174,51 @@ const Header = () => {
           </Button>
         </div>
 
-        {/* Mobile Menu - Improved with fixed positioning and backdrop blur */}
-        {isMobileMenuOpen && (
-          <div className="fixed inset-0 top-0 bg-background/95 backdrop-blur-lg md:hidden z-10 animate-fade-in">
-            <div className="flex flex-col h-full justify-center items-center pt-20 pb-8 px-6">
-              <nav className="flex flex-col items-center justify-center space-y-8 w-full">
-                {navLinks.map((link) => (
-                  <Link
-                    key={link.name}
-                    to={link.path}
-                    className={cn(
-                      'text-xl font-medium transition-colors hover:text-primary w-full text-center py-3',
-                      location.pathname === link.path ? 'text-primary border-b-2 border-primary' : 'text-muted-foreground'
-                    )}
-                  >
-                    {link.name}
-                  </Link>
-                ))}
-              </nav>
-            </div>
-          </div>
-        )}
+        {/* Mobile Menu - Improved with fixed positioning and better styling */}
+        <AnimatePresence>
+          {isMobileMenuOpen && (
+            <motion.div 
+              className="fixed inset-0 z-10 md:hidden"
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+              variants={menuVariants}
+            >
+              {/* Backdrop */}
+              <motion.div 
+                className="absolute inset-0 bg-background/95 backdrop-blur-xl"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+              />
+              
+              {/* Menu Content */}
+              <div className="relative h-full flex flex-col pt-20 pb-8 px-6">
+                <nav className="flex flex-col items-center justify-center space-y-8 w-full">
+                  {navLinks.map((link, index) => (
+                    <motion.div 
+                      key={link.name}
+                      variants={itemVariants}
+                      custom={index}
+                    >
+                      <Link
+                        to={link.path}
+                        className={cn(
+                          'text-xl font-medium transition-all hover:text-primary w-full text-center py-3 block',
+                          location.pathname === link.path 
+                            ? 'text-primary border-b-2 border-primary' 
+                            : 'text-muted-foreground'
+                        )}
+                      >
+                        {link.name}
+                      </Link>
+                    </motion.div>
+                  ))}
+                </nav>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </header>
   );

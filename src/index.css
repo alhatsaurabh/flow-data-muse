@@ -103,6 +103,51 @@
     cursor: grabbing;
     cursor: -webkit-grabbing;
   }
+
+  /* Animation utilities */
+  .animate-fade-in {
+    animation: fadeIn 0.3s ease-out forwards;
+  }
+
+  .animate-slide-in {
+    animation: slideIn 0.3s ease-out forwards;
+  }
+
+  .animate-scale-in {
+    animation: scaleIn 0.3s ease-out forwards;
+  }
+}
+
+/* Animation keyframes */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 .hero-gradient {
@@ -146,4 +191,19 @@
   .mobile-nav-active {
     overflow: hidden;
   }
+
+  /* Better mobile menu appearance */
+  .mobile-menu {
+    @apply backdrop-blur-xl bg-background/95;
+  }
+  
+  /* Improve touch interaction on mobile */
+  .mobile-touch-friendly {
+    @apply touch-pan-y min-h-[44px] min-w-[44px];
+  }
+}
+
+/* Glass effect for UI elements */
+.glass-effect {
+  @apply backdrop-blur-md bg-background/80 border border-border/50;
 }

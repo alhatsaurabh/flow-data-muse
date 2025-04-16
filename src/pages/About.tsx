@@ -1,9 +1,24 @@
+
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import PageTransition from '@/components/PageTransition';
-import { Download, Award, LucideGraduationCap } from 'lucide-react';
+import { Download, Award, LucideGraduationCap, TrendingUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { motion } from 'framer-motion';
+import { useEffect, useState } from 'react';
+
 const About = () => {
+  const [animateSkills, setAnimateSkills] = useState(false);
+  
+  useEffect(() => {
+    // Set a short delay before starting animation for better UX
+    const timer = setTimeout(() => {
+      setAnimateSkills(true);
+    }, 300);
+    
+    return () => clearTimeout(timer);
+  }, []);
+
   const skills = [{
     name: 'Data Analysis',
     level: 95
@@ -29,6 +44,7 @@ const About = () => {
     name: 'Statistical Analysis',
     level: 88
   }];
+  
   const experiences = [{
     role: 'Senior Data Analyst',
     company: 'Global Tech Solutions',
@@ -45,6 +61,7 @@ const About = () => {
     period: '2017 - 2019',
     description: 'Supported data collection, cleaning, and preliminary analysis for various business units. Created regular reports and dashboards.'
   }];
+  
   const education = [{
     degree: 'Master of Science in Data Science',
     institution: 'University of Data Analytics',
@@ -54,8 +71,17 @@ const About = () => {
     institution: 'State University',
     year: '2012 - 2016'
   }];
-  const certifications = ['Google Data Analytics Professional Certificate', 'Microsoft Certified: Data Analyst Associate', 'Tableau Desktop Specialist', 'IBM Data Science Professional Certificate', 'Python for Data Science and Machine Learning Bootcamp'];
-  return <PageTransition>
+  
+  const certifications = [
+    'Google Data Analytics Professional Certificate', 
+    'Microsoft Certified: Data Analyst Associate', 
+    'Tableau Desktop Specialist', 
+    'IBM Data Science Professional Certificate', 
+    'Python for Data Science and Machine Learning Bootcamp'
+  ];
+
+  return (
+    <PageTransition>
       <section className="pt-24 pb-16">
         <div className="container px-4 md:px-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-16">
@@ -72,31 +98,74 @@ const About = () => {
               </Button>
             </div>
             <div className="relative">
-              <img alt="Professional headshot" src="/lovable-uploads/d0fa852d-fd8e-4440-9b28-01801f40c0f1.jpg" className="rounded-lg w-full max-w-md mx-auto shadow-lg object-none" />
+              <img 
+                alt="Professional headshot" 
+                src="/lovable-uploads/d0fa852d-fd8e-4440-9b28-01801f40c0f1.jpg" 
+                className="rounded-lg w-full max-w-md mx-auto shadow-lg object-none" 
+              />
               {/* Decorative element */}
               <div className="absolute -z-10 -bottom-6 -right-6 w-full h-full border-2 border-primary rounded-lg" />
             </div>
           </div>
 
-          {/* Skills section */}
-          <div className="mb-20">
-            <h2 className="text-2xl font-bold mb-8">Technical Skills</h2>
+          {/* Skills section - Now with animations */}
+          <motion.div 
+            className="mb-20"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <h2 className="text-2xl font-bold mb-8 flex items-center gap-2">
+              <TrendingUp className="text-primary h-5 w-5" />
+              Technical Skills
+            </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {skills.map(skill => <div key={skill.name} className="space-y-2">
+              {skills.map((skill, index) => (
+                <motion.div 
+                  key={skill.name} 
+                  className="space-y-2"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3, delay: index * 0.1 }}
+                >
                   <div className="flex justify-between items-center">
                     <span className="font-medium">{skill.name}</span>
-                    <span className="text-sm text-muted-foreground">{skill.level}%</span>
+                    <motion.span 
+                      className="text-sm text-muted-foreground"
+                      initial={{ opacity: 0 }}
+                      animate={{ 
+                        opacity: animateSkills ? 1 : 0,
+                      }}
+                      transition={{ duration: 0.5, delay: 0.5 + (index * 0.1) }}
+                    >
+                      {skill.level}%
+                    </motion.span>
                   </div>
-                  <Progress value={skill.level} className="h-2" />
-                </div>)}
+                  <div className="h-2 bg-muted rounded-full overflow-hidden">
+                    <motion.div 
+                      className="h-full bg-primary"
+                      initial={{ width: "0%" }}
+                      animate={{ 
+                        width: animateSkills ? `${skill.level}%` : "0%" 
+                      }}
+                      transition={{ 
+                        duration: 1, 
+                        delay: 0.2 + (index * 0.1),
+                        ease: "easeOut"
+                      }}
+                    />
+                  </div>
+                </motion.div>
+              ))}
             </div>
-          </div>
+          </motion.div>
 
           {/* Work Experience */}
           <div className="mb-20">
             <h2 className="text-2xl font-bold mb-8">Work Experience</h2>
             <div className="space-y-8">
-              {experiences.map((exp, index) => <Card key={index} className="border">
+              {experiences.map((exp, index) => (
+                <Card key={index} className="border">
                   <CardContent className="pt-6">
                     <div className="mb-2">
                       <h3 className="text-xl font-bold">{exp.role}</h3>
@@ -105,7 +174,8 @@ const About = () => {
                     </div>
                     <p className="text-muted-foreground">{exp.description}</p>
                   </CardContent>
-                </Card>)}
+                </Card>
+              ))}
             </div>
           </div>
 
@@ -116,11 +186,13 @@ const About = () => {
                 <LucideGraduationCap className="h-5 w-5 text-primary" /> Education
               </h2>
               <div className="space-y-6">
-                {education.map((edu, index) => <div key={index} className="border-l-2 border-primary pl-4 py-1">
+                {education.map((edu, index) => (
+                  <div key={index} className="border-l-2 border-primary pl-4 py-1">
                     <h3 className="font-bold">{edu.degree}</h3>
                     <p className="text-muted-foreground">{edu.institution}</p>
                     <p className="text-sm text-muted-foreground">{edu.year}</p>
-                  </div>)}
+                  </div>
+                ))}
               </div>
             </div>
             <div>
@@ -128,14 +200,18 @@ const About = () => {
                 <Award className="h-5 w-5 text-primary" /> Certifications
               </h2>
               <ul className="space-y-3">
-                {certifications.map((cert, index) => <li key={index} className="flex items-start gap-2">
+                {certifications.map((cert, index) => (
+                  <li key={index} className="flex items-start gap-2">
                     <span className="text-primary">•</span> {cert}
-                  </li>)}
+                  </li>
+                ))}
               </ul>
             </div>
           </div>
         </div>
       </section>
-    </PageTransition>;
+    </PageTransition>
+  );
 };
+
 export default About;
