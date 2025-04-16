@@ -5,47 +5,64 @@ import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/components/ui/use-toast';
 import { Mail, Phone, MapPin, Send } from 'lucide-react';
 import PageTransition from '@/components/PageTransition';
+
 const Contact = () => {
-  const {
-    toast
-  } = useToast();
+  const { toast } = useToast();
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     subject: '',
     message: ''
   });
+
   const [isSubmitting, setIsSubmitting] = useState(false);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const {
-      name,
-      value
-    } = e.target;
+    const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
       [name]: value
     }));
   };
-  const handleSubmit = (e: React.FormEvent) => {
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Simulate form submission
-    setTimeout(() => {
+    try {
+      const response = await fetch("https://formspree.io/f/xvgknzbg", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(formData)
+      });
+
+      if (response.ok) {
+        toast({
+          title: "Message sent!",
+          description: "Thanks for reaching out! I’ll reply soon."
+        });
+        setFormData({ name: '', email: '', subject: '', message: '' });
+      } else {
+        toast({
+          title: "Submission failed",
+          description: "Oops, something went wrong. Try again later."
+        });
+      }
+    } catch (error) {
       toast({
-        title: "Message sent!",
-        description: "Thank you for your message. I'll get back to you soon."
+        title: "Network error",
+        description: "Check your connection or try a different method."
       });
-      setFormData({
-        name: '',
-        email: '',
-        subject: '',
-        message: ''
-      });
+    } finally {
       setIsSubmitting(false);
-    }, 1500);
+    }
   };
-  return <PageTransition>
+
+  return (
+    <PageTransition>
       <section className="pt-24 pb-16">
         <div className="container px-4 md:px-6">
           <div className="text-center max-w-3xl mx-auto mb-16">
@@ -96,7 +113,7 @@ const Contact = () => {
               </form>
             </div>
 
-            {/* Contact Information */}
+            {/* Contact Info */}
             <div className="space-y-8 flex flex-col justify-center">
               <div>
                 <h2 className="text-2xl font-bold mb-6">Contact Information</h2>
@@ -111,7 +128,10 @@ const Contact = () => {
                     </div>
                     <div>
                       <h3 className="font-medium">Email</h3>
-                      <a href="mailto:alhatsaurabh@gmail.com" className="text-muted-foreground hover:text-primary">alhatsaurabh@gmail.com</a>
+                      <span className="text-muted-foreground hover:text-primary cursor-pointer"
+                        onClick={() => window.location.href = 'mailto:' + ['alhatsaurabh','gmail.com'].join('@')}>
+                        alhatsaurabh [at] gmail [dot] com
+                      </span>
                     </div>
                   </div>
 
@@ -121,7 +141,10 @@ const Contact = () => {
                     </div>
                     <div>
                       <h3 className="font-medium">Phone</h3>
-                      <a href="tel:+4915510838717" className="text-muted-foreground hover:text-primary">+49 15510838717</a>
+                      <span className="text-muted-foreground hover:text-primary cursor-pointer"
+                        onClick={() => window.location.href = 'tel:+491762345678'}>
+                        +49 •••• ••5678
+                      </span>
                     </div>
                   </div>
 
@@ -162,6 +185,8 @@ const Contact = () => {
           </div>
         </div>
       </section>
-    </PageTransition>;
+    </PageTransition>
+  );
 };
+
 export default Contact;
