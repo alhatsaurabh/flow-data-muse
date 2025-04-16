@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -6,44 +5,47 @@ import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/components/ui/use-toast';
 import { Mail, Phone, MapPin, Send } from 'lucide-react';
 import PageTransition from '@/components/PageTransition';
-
 const Contact = () => {
-  const { toast } = useToast();
+  const {
+    toast
+  } = useToast();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     subject: '',
-    message: '',
+    message: ''
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
-
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    const {
+      name,
+      value
+    } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
   };
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
+
     // Simulate form submission
     setTimeout(() => {
       toast({
         title: "Message sent!",
-        description: "Thank you for your message. I'll get back to you soon.",
+        description: "Thank you for your message. I'll get back to you soon."
       });
       setFormData({
         name: '',
         email: '',
         subject: '',
-        message: '',
+        message: ''
       });
       setIsSubmitting(false);
     }, 1500);
   };
-
-  return (
-    <PageTransition>
+  return <PageTransition>
       <section className="pt-24 pb-16">
         <div className="container px-4 md:px-6">
           <div className="text-center max-w-3xl mx-auto mb-16">
@@ -63,28 +65,13 @@ const Contact = () => {
                     <label htmlFor="name" className="text-sm font-medium">
                       Your Name
                     </label>
-                    <Input
-                      id="name"
-                      name="name"
-                      value={formData.name}
-                      onChange={handleChange}
-                      placeholder="John Doe"
-                      required
-                    />
+                    <Input id="name" name="name" value={formData.name} onChange={handleChange} placeholder="John Doe" required />
                   </div>
                   <div className="space-y-2">
                     <label htmlFor="email" className="text-sm font-medium">
                       Email Address
                     </label>
-                    <Input
-                      id="email"
-                      name="email"
-                      type="email"
-                      value={formData.email}
-                      onChange={handleChange}
-                      placeholder="john@example.com"
-                      required
-                    />
+                    <Input id="email" name="email" type="email" value={formData.email} onChange={handleChange} placeholder="john@example.com" required />
                   </div>
                 </div>
 
@@ -92,29 +79,14 @@ const Contact = () => {
                   <label htmlFor="subject" className="text-sm font-medium">
                     Subject
                   </label>
-                  <Input
-                    id="subject"
-                    name="subject"
-                    value={formData.subject}
-                    onChange={handleChange}
-                    placeholder="How can I help you?"
-                    required
-                  />
+                  <Input id="subject" name="subject" value={formData.subject} onChange={handleChange} placeholder="How can I help you?" required />
                 </div>
 
                 <div className="space-y-2">
                   <label htmlFor="message" className="text-sm font-medium">
                     Message
                   </label>
-                  <Textarea
-                    id="message"
-                    name="message"
-                    value={formData.message}
-                    onChange={handleChange}
-                    placeholder="Tell me about your project..."
-                    rows={6}
-                    required
-                  />
+                  <Textarea id="message" name="message" value={formData.message} onChange={handleChange} placeholder="Tell me about your project..." rows={6} required />
                 </div>
 
                 <Button type="submit" className="w-full gap-2" disabled={isSubmitting}>
@@ -139,9 +111,7 @@ const Contact = () => {
                     </div>
                     <div>
                       <h3 className="font-medium">Email</h3>
-                      <a href="mailto:hello@example.com" className="text-muted-foreground hover:text-primary">
-                        hello@example.com
-                      </a>
+                      <a href="mailto:hello@example.com" className="text-muted-foreground hover:text-primary">alhatsaurabh@gmail.com</a>
                     </div>
                   </div>
 
@@ -151,9 +121,7 @@ const Contact = () => {
                     </div>
                     <div>
                       <h3 className="font-medium">Phone</h3>
-                      <a href="tel:+11234567890" className="text-muted-foreground hover:text-primary">
-                        +1 (123) 456-7890
-                      </a>
+                      <a href="tel:+11234567890" className="text-muted-foreground hover:text-primary">+49 15510838717</a>
                     </div>
                   </div>
 
@@ -163,9 +131,7 @@ const Contact = () => {
                     </div>
                     <div>
                       <h3 className="font-medium">Location</h3>
-                      <p className="text-muted-foreground">
-                        San Francisco, California
-                      </p>
+                      <p className="text-muted-foreground">Berlin, Germany</p>
                     </div>
                   </div>
                 </div>
@@ -196,8 +162,6 @@ const Contact = () => {
           </div>
         </div>
       </section>
-    </PageTransition>
-  );
+    </PageTransition>;
 };
-
 export default Contact;
