@@ -142,8 +142,8 @@ const Contact = () => {
                     <div>
                       <h3 className="font-medium">Phone</h3>
                       <span className="text-muted-foreground hover:text-primary cursor-pointer"
-                        onClick={() => window.location.href = 'tel:+491762345678'}>
-                        +49 •••• ••5678
+                        onClick={() => window.location.href = 'tel:+4915510838717'}>
+                        +49 •••• •••717
                       </span>
                     </div>
                   </div>
