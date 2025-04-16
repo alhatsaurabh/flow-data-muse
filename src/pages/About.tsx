@@ -1,8 +1,11 @@
+
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import PageTransition from '@/components/PageTransition';
 import { Download, Award, LucideGraduationCap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { motion } from 'framer-motion';
+
 const About = () => {
   const skills = [{
     name: 'Data Analysis',
@@ -55,7 +58,24 @@ const About = () => {
     year: '2012 - 2016'
   }];
   const certifications = ['Google Data Analytics Professional Certificate', 'Microsoft Certified: Data Analyst Associate', 'Tableau Desktop Specialist', 'IBM Data Science Professional Certificate', 'Python for Data Science and Machine Learning Bootcamp'];
-  return <PageTransition>
+  
+  const container = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1
+      }
+    }
+  };
+
+  const item = {
+    hidden: { opacity: 0, y: 20 },
+    show: { opacity: 1, y: 0, transition: { duration: 0.5 } }
+  };
+  
+  return (
+    <PageTransition>
       <section className="pt-24 pb-16">
         <div className="container px-4 md:px-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-16">
@@ -67,7 +87,7 @@ const About = () => {
               <p className="text-muted-foreground mb-8">
                 With a background in statistics and data science, I specialize in uncovering patterns in data that drive business growth and operational efficiency. I believe that good data analysis is as much about asking the right questions as it is about technical skills.
               </p>
-              <Button className="gap-2">
+              <Button className="gap-2 bg-primary">
                 <Download className="h-4 w-4" /> Download Resume
               </Button>
             </div>
@@ -81,15 +101,22 @@ const About = () => {
           {/* Skills section */}
           <div className="mb-20">
             <h2 className="text-2xl font-bold mb-8">Technical Skills</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {skills.map(skill => <div key={skill.name} className="space-y-2">
+            <motion.div 
+              className="grid grid-cols-1 md:grid-cols-2 gap-6"
+              variants={container}
+              initial="hidden"
+              animate="show"
+            >
+              {skills.map(skill => (
+                <motion.div key={skill.name} className="space-y-2" variants={item}>
                   <div className="flex justify-between items-center">
                     <span className="font-medium">{skill.name}</span>
                     <span className="text-sm text-muted-foreground">{skill.level}%</span>
                   </div>
                   <Progress value={skill.level} className="h-2" />
-                </div>)}
-            </div>
+                </motion.div>
+              ))}
+            </motion.div>
           </div>
 
           {/* Work Experience */}
@@ -136,6 +163,7 @@ const About = () => {
           </div>
         </div>
       </section>
-    </PageTransition>;
+    </PageTransition>
+  );
 };
 export default About;

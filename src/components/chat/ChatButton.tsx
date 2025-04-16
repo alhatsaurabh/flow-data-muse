@@ -1,75 +1,98 @@
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { MessageCircle, X, Send } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { cn } from '@/lib/utils';
+
+type Message = {
+  id: string;
+  text: string;
+  isUser: boolean;
+  timestamp: Date;
+};
 
 const ChatButton = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [messages, setMessages] = useState<{text: string, sender: 'user' | 'ai', timestamp: Date}[]>([
+  const [message, setMessage] = useState('');
+  const [messages, setMessages] = useState<Message[]>([
     {
-      text: "Hi there! I'm Saurabh's virtual assistant. How can I help you today?",
-      sender: 'ai',
-      timestamp: new Date()
-    }
+      id: '1',
+      text: 'Hi there! How can I help you today?',
+      isUser: false,
+      timestamp: new Date(),
+    },
   ]);
-  const [inputText, setInputText] = useState('');
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const messageEndRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
 
   const toggleChat = () => {
     setIsOpen(!isOpen);
-    // Focus input when chat is opened
-    if (!isOpen) {
+  };
+
+  const handleSendMessage = () => {
+    if (message.trim()) {
+      // Add user message
+      const userMessage: Message = {
+        id: Date.now().toString(),
+        text: message,
+        isUser: true,
+        timestamp: new Date(),
+      };
+      
+      setMessages((prev) => [...prev, userMessage]);
+      
+      // You can save messages to a database here
+      // For example, send to Supabase or another backend
+      console.log("Message sent to backend:", userMessage);
+      
+      // Clear input
+      setMessage('');
+      
+      // Simulate AI response (in a real app, this would come from your backend)
       setTimeout(() => {
-        inputRef.current?.focus();
-      }, 300);
+        const aiResponse: Message = {
+          id: (Date.now() + 1).toString(),
+          text: `Thank you for your message! I've received: "${message}". I'll get back to you soon.`,
+          isUser: false,
+          timestamp: new Date(),
+        };
+        setMessages((prev) => [...prev, aiResponse]);
+      }, 1000);
     }
   };
 
-  // Scroll to bottom of messages when new message is added
+  // Auto-scroll to bottom when messages change
   useEffect(() => {
-    if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    messageEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    
+    // Focus input when chat opens
+    if (isOpen && inputRef.current) {
+      inputRef.current.focus();
     }
-  }, [messages]);
+  }, [messages, isOpen]);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!inputText.trim()) return;
-    
-    // Add user message
-    const userMessage = {
-      text: inputText,
-      sender: 'user' as const,
-      timestamp: new Date()
-    };
-    
-    setMessages(prev => [...prev, userMessage]);
-    setInputText('');
-    
-    // Simulate AI response after a short delay
-    setTimeout(() => {
-      const aiMessage = {
-        text: "Thanks for reaching out! Saurabh will get back to you soon. Feel free to leave your contact details.",
-        sender: 'ai' as const,
-        timestamp: new Date()
-      };
-      setMessages(prev => [...prev, aiMessage]);
-    }, 1000);
+  // Handle Enter key to send message
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSendMessage();
+    }
   };
 
   return (
     <>
       <Button
         onClick={toggleChat}
-        className="fixed bottom-6 right-6 rounded-full h-14 w-14 shadow-lg p-0 z-50"
+        className="fixed bottom-4 right-4 p-3 rounded-full z-50 shadow-lg"
+        size="icon"
       >
-        {isOpen ? <X size={24} /> : <MessageCircle size={24} />}
+        {isOpen ? <X /> : <MessageCircle />}
       </Button>
-      
+
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -77,63 +100,58 @@ const ChatButton = () => {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.9 }}
             transition={{ duration: 0.2 }}
-            className="fixed bottom-24 right-6 w-80 md:w-96 h-96 bg-card rounded-lg shadow-lg overflow-hidden z-50 border"
+            className="fixed bottom-20 right-4 w-full max-w-md z-50"
           >
-            <div className="bg-primary p-4 text-primary-foreground flex items-center">
-              <Avatar className="mr-3 h-8 w-8">
-                <AvatarImage src="https://images.unsplash.com/photo-1568602471122-7832951cc4c5?w=400&h=400&fit=crop&crop=faces" alt="Saurabh Alhat" />
-                <AvatarFallback>SA</AvatarFallback>
-              </Avatar>
-              <div>
-                <h3 className="font-medium">Chat with Saurabh</h3>
-                <p className="text-xs opacity-80">Usually replies within a day</p>
-              </div>
-            </div>
-            
-            <div className="flex flex-col h-[calc(100%-64px)]">
-              <div className="flex-1 p-4 overflow-y-auto space-y-4">
-                {messages.map((message, index) => (
-                  <div 
-                    key={index}
-                    className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
-                  >
-                    <div 
-                      className={cn(
-                        "max-w-[80%] p-3 rounded-lg",
-                        message.sender === 'user' 
-                          ? "bg-primary text-primary-foreground" 
-                          : "bg-muted"
-                      )}
-                    >
-                      <p className="text-sm">{message.text}</p>
-                      <p className="text-xs opacity-70 mt-1">
-                        {message.timestamp.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-                <div ref={messagesEndRef} />
+            <Card className="border shadow-lg">
+              <div className="bg-primary text-primary-foreground p-3 font-medium rounded-t-lg">
+                Chat with me
               </div>
               
-              <form onSubmit={handleSubmit} className="p-3 border-t">
-                <div className="flex">
-                  <input
-                    ref={inputRef}
-                    type="text"
-                    value={inputText}
-                    onChange={(e) => setInputText(e.target.value)}
-                    placeholder="Type your message..."
-                    className="flex-1 p-2 rounded-l-md border border-r-0 focus:outline-none focus:ring-1 focus:ring-primary bg-background"
-                  />
-                  <button 
-                    type="submit"
-                    className="bg-primary text-primary-foreground p-2 rounded-r-md hover:bg-primary/90 transition-colors"
-                  >
-                    <Send className="h-4 w-4" />
-                  </button>
+              <ScrollArea className="h-80 p-4">
+                <div className="space-y-4">
+                  {messages.map((msg) => (
+                    <div
+                      key={msg.id}
+                      className={`flex ${
+                        msg.isUser ? 'justify-end' : 'justify-start'
+                      }`}
+                    >
+                      <div
+                        className={`max-w-[80%] rounded-lg p-3 ${
+                          msg.isUser
+                            ? 'bg-primary text-primary-foreground'
+                            : 'bg-muted'
+                        }`}
+                      >
+                        <p className="text-sm">{msg.text}</p>
+                        <p className="text-xs opacity-70 mt-1">
+                          {msg.timestamp.toLocaleTimeString([], {
+                            hour: '2-digit',
+                            minute: '2-digit',
+                          })}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                  <div ref={messageEndRef} />
                 </div>
-              </form>
-            </div>
+              </ScrollArea>
+              
+              <div className="p-3 border-t flex gap-2">
+                <Textarea
+                  ref={inputRef}
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  placeholder="Type your message..."
+                  className="resize-none min-h-[60px]"
+                  rows={2}
+                />
+                <Button onClick={handleSendMessage} size="icon" className="h-auto">
+                  <Send className="h-4 w-4" />
+                </Button>
+              </div>
+            </Card>
           </motion.div>
         )}
       </AnimatePresence>
