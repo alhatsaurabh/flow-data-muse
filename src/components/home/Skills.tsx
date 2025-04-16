@@ -13,8 +13,6 @@ const Skills = () => {
         { name: "MySQL", level: 90 },
         { name: "PostgreSQL", level: 85 },
         { name: "MongoDB", level: 75 },
-        { name: "AWS Redshift", level: 70 },
-        { name: "ETL Pipelines", level: 80 }
       ]
     },
     {
@@ -25,8 +23,6 @@ const Skills = () => {
         { name: "Tableau", level: 95 },
         { name: "Power BI", level: 90 },
         { name: "D3.js", level: 65 },
-        { name: "Matplotlib", level: 85 },
-        { name: "Seaborn", level: 80 }
       ]
     },
     {
@@ -37,8 +33,6 @@ const Skills = () => {
         { name: "Hypothesis Testing", level: 85 },
         { name: "Regression Analysis", level: 90 },
         { name: "Time Series", level: 80 },
-        { name: "ANOVA", level: 75 },
-        { name: "Cluster Analysis", level: 85 }
       ]
     },
     {
@@ -49,8 +43,6 @@ const Skills = () => {
         { name: "Python", level: 90 },
         { name: "R", level: 85 },
         { name: "SQL", level: 95 },
-        { name: "Excel", level: 90 },
-        { name: "Google Data Studio", level: 80 }
       ]
     },
     {
@@ -61,8 +53,6 @@ const Skills = () => {
         { name: "KPI Development", level: 90 },
         { name: "Executive Dashboards", level: 95 },
         { name: "Reporting", level: 90 },
-        { name: "Forecasting", level: 85 },
-        { name: "Business Metrics", level: 90 }
       ]
     },
     {
@@ -73,11 +63,24 @@ const Skills = () => {
         { name: "Data Storytelling", level: 95 },
         { name: "Technical Writing", level: 85 },
         { name: "Presentation", level: 90 },
-        { name: "Documentation", level: 85 },
-        { name: "Cross-functional Collaboration", level: 90 }
       ]
     }
   ];
+
+  const container = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1
+      }
+    }
+  };
+
+  const item = {
+    hidden: { opacity: 0, y: 20 },
+    show: { opacity: 1, y: 0, transition: { duration: 0.5 } }
+  };
 
   return (
     <section className="py-24">
@@ -89,14 +92,17 @@ const Skills = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <motion.div 
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+          variants={container}
+          initial="hidden"
+          animate="show"
+        >
           {skillSets.map((skillSet, index) => (
             <motion.div
               key={index}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-              viewport={{ once: true }}
+              variants={item}
+              className="h-full"
             >
               <Card className="border h-full">
                 <CardHeader className="pb-2">
@@ -117,7 +123,7 @@ const Skills = () => {
                             className="h-full bg-primary"
                             initial={{ width: "0%" }}
                             whileInView={{ width: `${skill.level}%` }}
-                            transition={{ duration: 1, delay: 0.3 + skillIndex * 0.1 }}
+                            transition={{ duration: 0.8, delay: 0.2 }}
                             viewport={{ once: true }}
                           />
                         </div>
@@ -128,7 +134,7 @@ const Skills = () => {
               </Card>
             </motion.div>
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   );

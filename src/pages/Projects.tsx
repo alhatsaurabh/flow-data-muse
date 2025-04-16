@@ -9,11 +9,14 @@ import { Link } from 'react-router-dom';
 import { Input } from '@/components/ui/input';
 import PageTransition from '@/components/PageTransition';
 import { motion } from 'framer-motion';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const Projects = () => {
   const [activeTab, setActiveTab] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearchFocused, setIsSearchFocused] = useState(false);
+  const isMobile = useIsMobile();
 
   // Reset to top when component mounts
   useEffect(() => {
@@ -137,11 +140,74 @@ const Projects = () => {
     show: { opacity: 1, y: 0, transition: { duration: 0.5 } }
   };
 
+  const renderProjectCard = (project) => (
+    <motion.div key={project.id} variants={item} className="h-full">
+      <Card className="overflow-hidden group border h-full flex flex-col">
+        <div className="aspect-video relative overflow-hidden">
+          <img 
+            src={project.image} 
+            alt={project.title}
+            className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-105"
+          />
+          <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-3">
+            {project.github && (
+              <a 
+                href={project.github} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="bg-white/20 p-2 rounded-full hover:bg-white/40 transition-colors"
+                aria-label="View GitHub Repository"
+              >
+                <Github className="h-5 w-5 text-white" />
+              </a>
+            )}
+            {project.liveDemo && (
+              <a 
+                href={project.liveDemo} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="bg-white/20 p-2 rounded-full hover:bg-white/40 transition-colors"
+                aria-label="View Live Demo"
+              >
+                <ExternalLink className="h-5 w-5 text-white" />
+              </a>
+            )}
+          </div>
+        </div>
+        <CardHeader>
+          <CardTitle>{project.title}</CardTitle>
+          <CardDescription className="line-clamp-2">{project.description}</CardDescription>
+        </CardHeader>
+        <CardContent className="flex-grow">
+          <div className="flex flex-wrap gap-2">
+            {project.tags.map((tag) => (
+              <Badge 
+                key={tag} 
+                variant="secondary"
+                className="transition-all hover:bg-primary hover:text-primary-foreground cursor-pointer"
+                onClick={() => setSearchQuery(tag)}
+              >
+                {tag}
+              </Badge>
+            ))}
+          </div>
+        </CardContent>
+        <CardFooter>
+          <Button asChild variant="ghost" className="gap-2 w-full justify-center">
+            <Link to={project.slug}>
+              View Case Study <ArrowRight className="h-4 w-4" />
+            </Link>
+          </Button>
+        </CardFooter>
+      </Card>
+    </motion.div>
+  );
+
   return (
     <PageTransition>
       <section className="pt-24 pb-16">
         <div className="container px-4 md:px-6">
-          <div className="text-center max-w-3xl mx-auto mb-16">
+          <div className="text-center max-w-3xl mx-auto mb-10">
             <h1 className="text-4xl font-bold tracking-tight mb-4">Data Projects</h1>
             <p className="text-muted-foreground text-lg">
               Explore my portfolio of data analytics projects across various industries and domains.
@@ -163,30 +229,37 @@ const Projects = () => {
             </div>
           </div>
 
-          <Tabs defaultValue="all" value={activeTab} onValueChange={setActiveTab} className="mb-12">
-            <div className="flex justify-center">
-              <TabsList className="bg-muted/60">
-                <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
-                  <TabsTrigger value="all">All Projects</TabsTrigger>
-                </motion.div>
-                <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
-                  <TabsTrigger value="business-intelligence">Business Intelligence</TabsTrigger>
-                </motion.div>
-                <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
-                  <TabsTrigger value="machine-learning">Machine Learning</TabsTrigger>
-                </motion.div>
-                <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
-                  <TabsTrigger value="financial">Financial</TabsTrigger>
-                </motion.div>
-                <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
-                  <TabsTrigger value="marketing">Marketing</TabsTrigger>
-                </motion.div>
-                <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
-                  <TabsTrigger value="healthcare">Healthcare</TabsTrigger>
-                </motion.div>
-              </TabsList>
-            </div>
-          </Tabs>
+          <div className="mb-8">
+            {isMobile ? (
+              <ScrollArea className="w-full pb-4">
+                <div className="flex min-w-max px-1">
+                  <Tabs defaultValue="all" value={activeTab} onValueChange={setActiveTab} className="w-full">
+                    <TabsList className="bg-muted/60 inline-flex w-max">
+                      <TabsTrigger value="all">All Projects</TabsTrigger>
+                      <TabsTrigger value="business-intelligence">Business Intelligence</TabsTrigger>
+                      <TabsTrigger value="machine-learning">Machine Learning</TabsTrigger>
+                      <TabsTrigger value="financial">Financial</TabsTrigger>
+                      <TabsTrigger value="marketing">Marketing</TabsTrigger>
+                      <TabsTrigger value="healthcare">Healthcare</TabsTrigger>
+                    </TabsList>
+                  </Tabs>
+                </div>
+              </ScrollArea>
+            ) : (
+              <Tabs defaultValue="all" value={activeTab} onValueChange={setActiveTab} className="mb-8">
+                <div className="flex justify-center">
+                  <TabsList className="bg-muted/60">
+                    <TabsTrigger value="all">All Projects</TabsTrigger>
+                    <TabsTrigger value="business-intelligence">Business Intelligence</TabsTrigger>
+                    <TabsTrigger value="machine-learning">Machine Learning</TabsTrigger>
+                    <TabsTrigger value="financial">Financial</TabsTrigger>
+                    <TabsTrigger value="marketing">Marketing</TabsTrigger>
+                    <TabsTrigger value="healthcare">Healthcare</TabsTrigger>
+                  </TabsList>
+                </div>
+              </Tabs>
+            )}
+          </div>
 
           <motion.div 
             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
@@ -194,68 +267,7 @@ const Projects = () => {
             initial="hidden"
             animate="show"
           >
-            {filteredProjects.map((project) => (
-              <motion.div key={project.id} variants={item} className="h-full">
-                <Card className="overflow-hidden group border h-full flex flex-col">
-                  <div className="aspect-video relative overflow-hidden">
-                    <img 
-                      src={project.image} 
-                      alt={project.title}
-                      className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-105"
-                    />
-                    <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-3">
-                      {project.github && (
-                        <a 
-                          href={project.github} 
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          className="bg-white/20 p-2 rounded-full hover:bg-white/40 transition-colors"
-                          aria-label="View GitHub Repository"
-                        >
-                          <Github className="h-5 w-5 text-white" />
-                        </a>
-                      )}
-                      {project.liveDemo && (
-                        <a 
-                          href={project.liveDemo} 
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          className="bg-white/20 p-2 rounded-full hover:bg-white/40 transition-colors"
-                          aria-label="View Live Demo"
-                        >
-                          <ExternalLink className="h-5 w-5 text-white" />
-                        </a>
-                      )}
-                    </div>
-                  </div>
-                  <CardHeader>
-                    <CardTitle>{project.title}</CardTitle>
-                    <CardDescription className="line-clamp-2">{project.description}</CardDescription>
-                  </CardHeader>
-                  <CardContent className="flex-grow">
-                    <div className="flex flex-wrap gap-2">
-                      {project.tags.map((tag) => (
-                        <Badge 
-                          key={tag} 
-                          variant="secondary"
-                          className="transition-all hover:bg-primary hover:text-primary-foreground cursor-pointer"
-                          onClick={() => setSearchQuery(tag)}
-                        >
-                          {tag}
-                        </Badge>
-                      ))}
-                    </div>
-                  </CardContent>
-                  <CardFooter>
-                    <Button asChild variant="ghost" className="gap-2 w-full justify-center">
-                      <Link to={project.slug}>
-                        View Case Study <ArrowRight className="h-4 w-4" />
-                      </Link>
-                    </Button>
-                  </CardFooter>
-                </Card>
-              </motion.div>
-            ))}
+            {filteredProjects.map(renderProjectCard)}
           </motion.div>
 
           {filteredProjects.length === 0 && (

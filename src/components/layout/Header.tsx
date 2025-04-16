@@ -45,13 +45,13 @@ const Header = () => {
   return (
     <header 
       className={cn(
-        'fixed top-0 left-0 w-full z-50 transition-all duration-300 py-4 px-6 md:px-8',
-        isScrolled ? 'bg-background/80 backdrop-blur-md border-b' : 'bg-transparent'
+        'fixed top-0 left-0 w-full z-50 transition-all duration-300 py-3 px-4 md:py-4 md:px-6',
+        isScrolled ? 'bg-background/90 backdrop-blur-md border-b shadow-sm' : 'bg-transparent'
       )}
     >
       <div className="container mx-auto flex justify-between items-center">
         {/* Logo */}
-        <Link to="/" className="text-xl font-bold text-foreground flex items-center gap-2">
+        <Link to="/" className="text-xl font-bold text-foreground flex items-center gap-2 relative z-20">
           <span className="text-primary">Data</span>Analyst
         </Link>
 
@@ -71,7 +71,13 @@ const Header = () => {
           ))}
           
           {/* Theme Toggle */}
-          <Button variant="ghost" size="icon" onClick={toggleTheme} aria-label="Toggle theme">
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            onClick={toggleTheme} 
+            aria-label="Toggle theme"
+            className="focus:outline-none"
+          >
             {theme === 'dark' ? (
               <Sun className="h-5 w-5" />
             ) : (
@@ -81,8 +87,14 @@ const Header = () => {
         </nav>
 
         {/* Mobile Menu Button */}
-        <div className="flex items-center md:hidden gap-4">
-          <Button variant="ghost" size="icon" onClick={toggleTheme} aria-label="Toggle theme">
+        <div className="flex items-center md:hidden gap-4 relative z-20">
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            onClick={toggleTheme} 
+            aria-label="Toggle theme"
+            className="focus:outline-none"
+          >
             {theme === 'dark' ? (
               <Sun className="h-5 w-5" />
             ) : (
@@ -90,7 +102,16 @@ const Header = () => {
             )}
           </Button>
           
-          <Button variant="ghost" size="icon" onClick={toggleMobileMenu} aria-label="Toggle menu">
+          <Button 
+            variant={isScrolled ? "ghost" : "outline"} 
+            size="icon" 
+            onClick={toggleMobileMenu} 
+            aria-label="Toggle menu"
+            className={cn(
+              "focus:outline-none",
+              !isScrolled && "bg-background/50 border-background/50 backdrop-blur-sm"
+            )}
+          >
             {isMobileMenuOpen ? (
               <X className="h-5 w-5" />
             ) : (
@@ -101,21 +122,23 @@ const Header = () => {
 
         {/* Mobile Menu */}
         {isMobileMenuOpen && (
-          <div className="fixed inset-0 top-16 bg-background/95 backdrop-blur-sm md:hidden z-50 animate-fade-in">
-            <nav className="flex flex-col items-center justify-center h-full space-y-8">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.name}
-                  to={link.path}
-                  className={cn(
-                    'text-lg font-medium transition-colors hover:text-primary',
-                    location.pathname === link.path ? 'text-primary' : 'text-muted-foreground'
-                  )}
-                >
-                  {link.name}
-                </Link>
-              ))}
-            </nav>
+          <div className="fixed inset-0 top-0 bg-background/98 backdrop-blur-sm md:hidden z-10 animate-fade-in">
+            <div className="pt-20 pb-8 px-6">
+              <nav className="flex flex-col items-center justify-center space-y-8">
+                {navLinks.map((link) => (
+                  <Link
+                    key={link.name}
+                    to={link.path}
+                    className={cn(
+                      'text-lg font-medium transition-colors hover:text-primary',
+                      location.pathname === link.path ? 'text-primary' : 'text-muted-foreground'
+                    )}
+                  >
+                    {link.name}
+                  </Link>
+                ))}
+              </nav>
+            </div>
           </div>
         )}
       </div>

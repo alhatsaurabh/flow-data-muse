@@ -1,9 +1,10 @@
 
 import { useState, useRef, useEffect } from 'react';
-import { MessageCircle, X } from 'lucide-react';
+import { MessageCircle, X, Send } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { cn } from '@/lib/utils';
 
 const ChatButton = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -16,9 +17,16 @@ const ChatButton = () => {
   ]);
   const [inputText, setInputText] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const toggleChat = () => {
     setIsOpen(!isOpen);
+    // Focus input when chat is opened
+    if (!isOpen) {
+      setTimeout(() => {
+        inputRef.current?.focus();
+      }, 300);
+    }
   };
 
   // Scroll to bottom of messages when new message is added
@@ -82,7 +90,7 @@ const ChatButton = () => {
               </div>
             </div>
             
-            <div className="flex flex-col h-full">
+            <div className="flex flex-col h-[calc(100%-64px)]">
               <div className="flex-1 p-4 overflow-y-auto space-y-4">
                 {messages.map((message, index) => (
                   <div 
@@ -90,11 +98,12 @@ const ChatButton = () => {
                     className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
                   >
                     <div 
-                      className={`max-w-[80%] p-3 rounded-lg ${
+                      className={cn(
+                        "max-w-[80%] p-3 rounded-lg",
                         message.sender === 'user' 
-                          ? 'bg-primary text-primary-foreground' 
-                          : 'bg-muted'
-                      }`}
+                          ? "bg-primary text-primary-foreground" 
+                          : "bg-muted"
+                      )}
                     >
                       <p className="text-sm">{message.text}</p>
                       <p className="text-xs opacity-70 mt-1">
@@ -109,17 +118,18 @@ const ChatButton = () => {
               <form onSubmit={handleSubmit} className="p-3 border-t">
                 <div className="flex">
                   <input
+                    ref={inputRef}
                     type="text"
                     value={inputText}
                     onChange={(e) => setInputText(e.target.value)}
                     placeholder="Type your message..."
-                    className="flex-1 p-2 rounded-l-md border border-r-0 focus:outline-none focus:ring-1 focus:ring-primary"
+                    className="flex-1 p-2 rounded-l-md border border-r-0 focus:outline-none focus:ring-1 focus:ring-primary bg-background"
                   />
                   <button 
                     type="submit"
-                    className="bg-primary text-primary-foreground px-4 rounded-r-md hover:bg-primary/90 transition-colors"
+                    className="bg-primary text-primary-foreground p-2 rounded-r-md hover:bg-primary/90 transition-colors"
                   >
-                    Send
+                    <Send className="h-4 w-4" />
                   </button>
                 </div>
               </form>
