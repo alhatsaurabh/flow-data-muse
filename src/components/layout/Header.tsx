@@ -134,7 +134,7 @@ const Header = () => {
 
         {/* Mobile Menu */}
         {isMobileMenuOpen && (
-          <div className="fixed inset-0 top-0 bg-background z-10 animate-fade-in">
+          <div className="fixed inset-0 top-0 bg-background/90 backdrop-blur-md z-10 animate-fade-in">
             <div className="pt-20 pb-8 px-6">
               <nav className="flex flex-col items-center justify-center space-y-8">
                 {navLinks.map((link) => (

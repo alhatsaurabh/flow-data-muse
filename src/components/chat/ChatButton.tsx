@@ -3,10 +3,11 @@ import { useState, useEffect, useRef } from 'react';
 import { MessageCircle, X, Send } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { cn } from '@/lib/utils';
 
 type Message = {
   id: string;
@@ -18,16 +19,26 @@ type Message = {
 const ChatButton = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [message, setMessage] = useState('');
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: '1',
-      text: 'Hi there! How can I help you today?',
-      isUser: false,
-      timestamp: new Date(),
-    },
-  ]);
+  const [messages, setMessages] = useState<Message[]>(() => {
+    // Try to load messages from localStorage
+    const savedMessages = localStorage.getItem('chat-messages');
+    return savedMessages ? JSON.parse(savedMessages) : [
+      {
+        id: '1',
+        text: 'Hi there! How can I help you today?',
+        isUser: false,
+        timestamp: new Date(),
+      },
+    ];
+  });
   const messageEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const isMobile = useIsMobile();
+
+  // Save messages to localStorage when they change
+  useEffect(() => {
+    localStorage.setItem('chat-messages', JSON.stringify(messages));
+  }, [messages]);
 
   const toggleChat = () => {
     setIsOpen(!isOpen);
@@ -45,14 +56,10 @@ const ChatButton = () => {
       
       setMessages((prev) => [...prev, userMessage]);
       
-      // You can save messages to a database here
-      // For example, send to Supabase or another backend
-      console.log("Message sent to backend:", userMessage);
-      
       // Clear input
       setMessage('');
       
-      // Simulate AI response (in a real app, this would come from your backend)
+      // Simulate AI response
       setTimeout(() => {
         const aiResponse: Message = {
           id: (Date.now() + 1).toString(),
@@ -100,14 +107,27 @@ const ChatButton = () => {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.9 }}
             transition={{ duration: 0.2 }}
-            className="fixed bottom-20 right-4 w-full max-w-md z-50"
+            className={cn(
+              "fixed z-50",
+              isMobile 
+                ? "inset-0 m-2 top-12 bottom-20" 
+                : "bottom-20 right-4 w-full max-w-md"
+            )}
           >
-            <Card className="border shadow-lg">
-              <div className="bg-primary text-primary-foreground p-3 font-medium rounded-t-lg">
-                Chat with me
+            <Card className="border shadow-lg h-full flex flex-col">
+              <div className="bg-primary text-primary-foreground p-3 font-medium rounded-t-lg flex justify-between items-center">
+                <span>Chat with me</span>
+                {isMobile && (
+                  <Button variant="ghost" size="sm" onClick={toggleChat} className="text-primary-foreground p-1 h-auto">
+                    <X className="h-4 w-4" />
+                  </Button>
+                )}
               </div>
               
-              <ScrollArea className="h-80 p-4">
+              <ScrollArea className={cn(
+                "p-4 flex-grow",
+                isMobile ? "h-[calc(100%-8rem)]" : "h-80"
+              )}>
                 <div className="space-y-4">
                   {messages.map((msg) => (
                     <div
@@ -125,7 +145,7 @@ const ChatButton = () => {
                       >
                         <p className="text-sm">{msg.text}</p>
                         <p className="text-xs opacity-70 mt-1">
-                          {msg.timestamp.toLocaleTimeString([], {
+                          {new Date(msg.timestamp).toLocaleTimeString([], {
                             hour: '2-digit',
                             minute: '2-digit',
                           })}
@@ -144,10 +164,10 @@ const ChatButton = () => {
                   onChange={(e) => setMessage(e.target.value)}
                   onKeyDown={handleKeyDown}
                   placeholder="Type your message..."
-                  className="resize-none min-h-[60px]"
+                  className="resize-none min-h-[60px] text-sm"
                   rows={2}
                 />
-                <Button onClick={handleSendMessage} size="icon" className="h-auto">
+                <Button onClick={handleSendMessage} size="icon" className="h-auto self-end">
                   <Send className="h-4 w-4" />
                 </Button>
               </div>
