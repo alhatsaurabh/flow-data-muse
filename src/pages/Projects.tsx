@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -17,11 +17,78 @@ const Projects = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const isMobile = useIsMobile();
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   // Reset to top when component mounts
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+
+  // Handle horizontal scroll with touch for mobile
+  useEffect(() => {
+    if (!isMobile || !scrollContainerRef.current) return;
+    
+    const scrollContainer = scrollContainerRef.current;
+    let isDown = false;
+    let startX: number;
+    let scrollLeft: number;
+
+    const handleMouseDown = (e: MouseEvent | TouchEvent) => {
+      isDown = true;
+      scrollContainer.classList.add('active');
+      
+      if ('touches' in e) {
+        startX = e.touches[0].pageX - scrollContainer.offsetLeft;
+      } else {
+        startX = e.pageX - scrollContainer.offsetLeft;
+      }
+      
+      scrollLeft = scrollContainer.scrollLeft;
+    };
+
+    const handleMouseLeave = () => {
+      isDown = false;
+      scrollContainer.classList.remove('active');
+    };
+
+    const handleMouseUp = () => {
+      isDown = false;
+      scrollContainer.classList.remove('active');
+    };
+
+    const handleMouseMove = (e: MouseEvent | TouchEvent) => {
+      if (!isDown) return;
+      e.preventDefault();
+      
+      let x;
+      if ('touches' in e) {
+        x = e.touches[0].pageX - scrollContainer.offsetLeft;
+      } else {
+        x = e.pageX - scrollContainer.offsetLeft;
+      }
+      
+      const walk = (x - startX) * 2; // Scroll speed multiplier
+      scrollContainer.scrollLeft = scrollLeft - walk;
+    };
+
+    scrollContainer.addEventListener('mousedown', handleMouseDown);
+    scrollContainer.addEventListener('touchstart', handleMouseDown);
+    scrollContainer.addEventListener('mouseleave', handleMouseLeave);
+    scrollContainer.addEventListener('mouseup', handleMouseUp);
+    scrollContainer.addEventListener('touchend', handleMouseUp);
+    scrollContainer.addEventListener('mousemove', handleMouseMove);
+    scrollContainer.addEventListener('touchmove', handleMouseMove);
+
+    return () => {
+      scrollContainer.removeEventListener('mousedown', handleMouseDown);
+      scrollContainer.removeEventListener('touchstart', handleMouseDown);
+      scrollContainer.removeEventListener('mouseleave', handleMouseLeave);
+      scrollContainer.removeEventListener('mouseup', handleMouseUp);
+      scrollContainer.removeEventListener('touchend', handleMouseUp);
+      scrollContainer.removeEventListener('mousemove', handleMouseMove);
+      scrollContainer.removeEventListener('touchmove', handleMouseMove);
+    };
+  }, [isMobile]);
 
   const projects = [
     {
@@ -231,20 +298,28 @@ const Projects = () => {
 
           <div className="mb-8">
             {isMobile ? (
-              <ScrollArea className="w-full pb-4">
+              <div 
+                ref={scrollContainerRef}
+                className="w-full overflow-x-auto pb-4 scrollbar-none touch-pan-x"
+                style={{ 
+                  WebkitOverflowScrolling: 'touch',
+                  scrollbarWidth: 'none',
+                  msOverflowStyle: 'none'
+                }}
+              >
                 <div className="flex min-w-max px-1">
                   <Tabs defaultValue="all" value={activeTab} onValueChange={setActiveTab} className="w-full">
-                    <TabsList className="bg-muted/60 inline-flex w-max">
-                      <TabsTrigger value="all">All Projects</TabsTrigger>
-                      <TabsTrigger value="business-intelligence">Business Intelligence</TabsTrigger>
-                      <TabsTrigger value="machine-learning">Machine Learning</TabsTrigger>
-                      <TabsTrigger value="financial">Financial</TabsTrigger>
-                      <TabsTrigger value="marketing">Marketing</TabsTrigger>
-                      <TabsTrigger value="healthcare">Healthcare</TabsTrigger>
+                    <TabsList className="bg-muted/60 inline-flex w-max rounded-md">
+                      <TabsTrigger value="all" className="px-4 py-2">All Projects</TabsTrigger>
+                      <TabsTrigger value="business-intelligence" className="px-4 py-2">Business Intelligence</TabsTrigger>
+                      <TabsTrigger value="machine-learning" className="px-4 py-2">Machine Learning</TabsTrigger>
+                      <TabsTrigger value="financial" className="px-4 py-2">Financial</TabsTrigger>
+                      <TabsTrigger value="marketing" className="px-4 py-2">Marketing</TabsTrigger>
+                      <TabsTrigger value="healthcare" className="px-4 py-2">Healthcare</TabsTrigger>
                     </TabsList>
                   </Tabs>
                 </div>
-              </ScrollArea>
+              </div>
             ) : (
               <Tabs defaultValue="all" value={activeTab} onValueChange={setActiveTab} className="mb-8">
                 <div className="flex justify-center">

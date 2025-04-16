@@ -26,6 +26,18 @@ const Header = () => {
     setIsMobileMenuOpen(false);
   }, [location.pathname]);
 
+  // Prevent body scroll when mobile menu is open
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isMobileMenuOpen]);
+
   const toggleTheme = () => {
     setTheme(theme === 'dark' ? 'light' : 'dark');
   };
@@ -120,18 +132,18 @@ const Header = () => {
           </Button>
         </div>
 
-        {/* Mobile Menu */}
+        {/* Mobile Menu - Improved with fixed positioning and backdrop blur */}
         {isMobileMenuOpen && (
-          <div className="fixed inset-0 top-0 bg-background/98 backdrop-blur-sm md:hidden z-10 animate-fade-in">
-            <div className="pt-20 pb-8 px-6">
-              <nav className="flex flex-col items-center justify-center space-y-8">
+          <div className="fixed inset-0 top-0 bg-background/95 backdrop-blur-lg md:hidden z-10 animate-fade-in">
+            <div className="flex flex-col h-full justify-center items-center pt-20 pb-8 px-6">
+              <nav className="flex flex-col items-center justify-center space-y-8 w-full">
                 {navLinks.map((link) => (
                   <Link
                     key={link.name}
                     to={link.path}
                     className={cn(
-                      'text-lg font-medium transition-colors hover:text-primary',
-                      location.pathname === link.path ? 'text-primary' : 'text-muted-foreground'
+                      'text-xl font-medium transition-colors hover:text-primary w-full text-center py-3',
+                      location.pathname === link.path ? 'text-primary border-b-2 border-primary' : 'text-muted-foreground'
                     )}
                   >
                     {link.name}
