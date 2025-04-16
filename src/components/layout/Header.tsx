@@ -26,18 +26,6 @@ const Header = () => {
     setIsMobileMenuOpen(false);
   }, [location.pathname]);
 
-  // Prevent body scroll when mobile menu is open
-  useEffect(() => {
-    if (isMobileMenuOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
-    return () => {
-      document.body.style.overflow = '';
-    };
-  }, [isMobileMenuOpen]);
-
   const toggleTheme = () => {
     setTheme(theme === 'dark' ? 'light' : 'dark');
   };
@@ -134,7 +122,7 @@ const Header = () => {
 
         {/* Mobile Menu */}
         {isMobileMenuOpen && (
-          <div className="fixed inset-0 top-0 bg-background/90 backdrop-blur-md z-10 animate-fade-in">
+          <div className="fixed inset-0 top-0 bg-background/98 backdrop-blur-sm md:hidden z-10 animate-fade-in">
             <div className="pt-20 pb-8 px-6">
               <nav className="flex flex-col items-center justify-center space-y-8">
                 {navLinks.map((link) => (

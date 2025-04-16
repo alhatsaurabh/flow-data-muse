@@ -84,7 +84,10 @@ const Hero = () => {
           transition={{ duration: 0.5, delay: 0.6 }}
           className="flex flex-col sm:flex-row gap-4 mb-16"
         >
-          <Button asChild size="lg" className="gap-2 px-8">
+          <Button asChild size="lg" className="px-8">
+            <Link to="/projects">View Projects</Link>
+          </Button>
+          <Button asChild variant="outline" size="lg" className="gap-2">
             <a href="/resume.pdf" download>
               Download CV <Download className="h-4 w-4" />
             </a>

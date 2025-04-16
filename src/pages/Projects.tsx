@@ -1,4 +1,5 @@
-import { useState, useEffect, useRef } from 'react';
+
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -16,35 +17,11 @@ const Projects = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const isMobile = useIsMobile();
-  const scrollAreaRef = useRef<HTMLDivElement>(null);
 
   // Reset to top when component mounts
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
-
-  // Handle horizontal scroll on mobile with touch
-  useEffect(() => {
-    if (!isMobile || !scrollAreaRef.current) return;
-    
-    const handleWheel = (e: WheelEvent) => {
-      if (scrollAreaRef.current) {
-        scrollAreaRef.current.scrollLeft += e.deltaY;
-        if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
-          e.preventDefault();
-        }
-      }
-    };
-
-    const currentRef = scrollAreaRef.current;
-    currentRef.addEventListener('wheel', handleWheel, { passive: false });
-    
-    return () => {
-      if (currentRef) {
-        currentRef.removeEventListener('wheel', handleWheel);
-      }
-    };
-  }, [isMobile]);
 
   const projects = [
     {
@@ -62,7 +39,7 @@ const Projects = () => {
       id: 2,
       title: 'Marketing Campaign Effectiveness',
       description: 'Evaluated performance metrics across digital marketing channels to optimize ad spend and increase ROI by 22%.',
-      image: 'https://images.unsplash.com/photo-1460926653458-09294b3142bf?q=80&w=2015',
+      image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=2015',
       tags: ['R', 'Google Analytics', 'Data Studio'],
       category: 'marketing',
       slug: '/projects/marketing-analysis',
@@ -254,7 +231,7 @@ const Projects = () => {
 
           <div className="mb-8">
             {isMobile ? (
-              <div className="overflow-x-auto pb-4 hide-scrollbar" ref={scrollAreaRef}>
+              <ScrollArea className="w-full pb-4">
                 <div className="flex min-w-max px-1">
                   <Tabs defaultValue="all" value={activeTab} onValueChange={setActiveTab} className="w-full">
                     <TabsList className="bg-muted/60 inline-flex w-max">
@@ -267,7 +244,7 @@ const Projects = () => {
                     </TabsList>
                   </Tabs>
                 </div>
-              </div>
+              </ScrollArea>
             ) : (
               <Tabs defaultValue="all" value={activeTab} onValueChange={setActiveTab} className="mb-8">
                 <div className="flex justify-center">

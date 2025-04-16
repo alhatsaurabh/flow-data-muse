@@ -1,6 +1,5 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Progress } from '@/components/ui/progress';
 import { BarChart3, Database, LineChart, PieChart, TrendingUp, UsersRound } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -113,13 +112,21 @@ const Skills = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
-                    {skillSet.skills.slice(0, 3).map((skill, skillIndex) => (
+                    {skillSet.skills.map((skill, skillIndex) => (
                       <div key={skillIndex} className="space-y-1">
                         <div className="flex justify-between text-sm">
                           <span>{skill.name}</span>
                           <span className="text-muted-foreground">{skill.level}%</span>
                         </div>
-                        <Progress value={skill.level} className="h-2" />
+                        <div className="h-2 bg-muted rounded-full overflow-hidden">
+                          <motion.div 
+                            className="h-full bg-primary"
+                            initial={{ width: "0%" }}
+                            whileInView={{ width: `${skill.level}%` }}
+                            transition={{ duration: 0.8, delay: 0.2 }}
+                            viewport={{ once: true }}
+                          />
+                        </div>
                       </div>
                     ))}
                   </div>
