@@ -18,4 +18,17 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  optimizeDeps: {
+    include: ['gray-matter']
+  },
+  build: {
+    rollupOptions: {
+      external: ['gray-matter'],
+      output: {
+        globals: {
+          'gray-matter': 'matter'
+        }
+      }
+    }
+  }
 });
