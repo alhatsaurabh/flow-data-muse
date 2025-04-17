@@ -19,14 +19,7 @@ export default defineConfig({
     strictPort: true
   },
   plugins: [
-    react({
-      jsxRuntime: 'classic',
-      babel: {
-        plugins: [
-          ['@babel/plugin-transform-react-jsx', { runtime: 'classic' }]
-        ]
-      }
-    }),
+    react(),
     nodePolyfills(),
     markdown()
   ],
