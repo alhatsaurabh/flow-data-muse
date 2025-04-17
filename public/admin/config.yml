@@ -1,8 +1,6 @@
 backend:
-  name: github
-  repo: alhatsaurabh/flow-data-muse
+  name: git-gateway
   branch: main
-  base_url: https://saurabhalhatportfolio.netlify.app
 
 media_folder: "public/images"
 public_folder: "/images"
