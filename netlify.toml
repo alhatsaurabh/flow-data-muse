@@ -8,4 +8,10 @@
 [[redirects]]
   from = "/*"
   to = "/index.html"
-  status = 200 
+  status = 200
+
+[studio]
+  enabled = true
+  path = "/admin"
+  allowed_roles = ["admin"]
+  allowed_emails = ["saurabh.alhat@gmail.com"] 
