@@ -9,7 +9,7 @@ import { getCaseStudies, CaseStudy } from '@/lib/markdown';
 const FeaturedProjects = () => {
   const allCaseStudies = getCaseStudies();
   const featuredCaseStudies = allCaseStudies
-    .filter(project => (project as any).featured)
+    .filter(project => project.featured === true)
     .slice(0, 3);
 
   const container = {

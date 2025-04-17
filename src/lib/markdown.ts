@@ -21,6 +21,7 @@ export interface CaseStudy {
   github?: string;
   liveDemo?: string;
   content: string;
+  featured?: boolean;
 }
 
 interface MarkdownModule {
@@ -85,7 +86,8 @@ const allCaseStudies: CaseStudy[] = processMarkdownFiles<CaseStudy>(
     slug,
     github: module.attributes.github,
     liveDemo: module.attributes.liveDemo,
-    content: module.html
+    content: module.html,
+    featured: module.attributes.featured
   })
 );
 
