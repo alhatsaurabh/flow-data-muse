@@ -2,6 +2,7 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import path from "path";
 import { nodePolyfills } from 'vite-plugin-node-polyfills';
+import markdown from 'vite-plugin-markdown';
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -15,6 +16,14 @@ export default defineConfig({
       // To support gray-matter which uses Node.js modules
       include: ['path', 'fs', 'buffer']
     }),
+    markdown({
+      mode: ['html', 'toc'],
+      markdownIt: {
+        html: true,
+        linkify: true,
+        typographer: true,
+      }
+    })
   ],
   resolve: {
     alias: {

@@ -1,5 +1,3 @@
-import matter from 'gray-matter';
-
 export interface BlogPost {
   slug: string;
   title: string;
@@ -25,57 +23,72 @@ export interface CaseStudy {
   content: string;
 }
 
-// Use Vite's import.meta.glob to import all markdown files at build time
-const blogPostModules = import.meta.glob('/src/posts/blog/*.md', { eager: true, as: 'raw' });
-const caseStudyModules = import.meta.glob('/src/posts/case-studies/*.md', { eager: true, as: 'raw' });
+interface MarkdownModule {
+  default: string;
+  metadata: {
+    title: string;
+    date: string;
+    readTime: string;
+    imageUrl: string;
+    excerpt: string;
+    tags?: string[];
+    featured?: boolean;
+    description?: string;
+    image?: string;
+    category?: string;
+    github?: string;
+    liveDemo?: string;
+  };
+}
+
+// Use Vite's import.meta.glob to import all markdown files
+const blogPostModules = import.meta.glob<MarkdownModule>('/src/posts/blog/*.md', { eager: true });
+const caseStudyModules = import.meta.glob<MarkdownModule>('/src/posts/case-studies/*.md', { eager: true });
 
 const processMarkdownFiles = <T>(
-  modules: Record<string, string>, 
+  modules: Record<string, MarkdownModule>,
   extractSlug: (path: string) => string,
-  processData: (slug: string, data: any, content: string, index?: number) => T
+  processData: (slug: string, module: MarkdownModule, index?: number) => T
 ): T[] => {
-  return Object.entries(modules).map(([path, rawContent], index) => {
+  return Object.entries(modules).map(([path, module], index) => {
     const slug = extractSlug(path);
-    const { data, content } = matter(rawContent, {});
-    return processData(slug, data, content, index);
+    return processData(slug, module, index);
   });
 };
 
 const allBlogPosts: BlogPost[] = processMarkdownFiles<BlogPost>(
   blogPostModules,
   (path) => path.match(/\/src\/posts\/blog\/(.*)\.md$/)?.[1] ?? '',
-  (slug, data, content) => ({
+  (slug, module) => ({
     slug,
-    title: data.title,
-    date: data.date,
-    readTime: data.readTime,
-    imageUrl: data.imageUrl,
-    excerpt: data.excerpt,
-    content,
-    tags: data.tags,
-    featured: data.featured
+    title: module.metadata.title,
+    date: module.metadata.date,
+    readTime: module.metadata.readTime,
+    imageUrl: module.metadata.imageUrl,
+    excerpt: module.metadata.excerpt,
+    content: module.default,
+    tags: module.metadata.tags,
+    featured: module.metadata.featured
   })
 ).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
 const allCaseStudies: CaseStudy[] = processMarkdownFiles<CaseStudy>(
   caseStudyModules,
   (path) => path.match(/\/src\/posts\/case-studies\/(.*)\.md$/)?.[1] ?? '',
-  (slug, data, content, index) => ({
-    id: index !== undefined ? index + 1 : 0, // Assign id based on index
-    title: data.title,
-    description: data.description,
-    image: data.image,
-    tags: data.tags,
-    category: data.category,
+  (slug, module, index) => ({
+    id: index !== undefined ? index + 1 : 0,
+    title: module.metadata.title,
+    description: module.metadata.description || '',
+    image: module.metadata.image || '',
+    tags: module.metadata.tags || [],
+    category: module.metadata.category || '',
     slug,
-    github: data.github,
-    liveDemo: data.liveDemo,
-    content
+    github: module.metadata.github,
+    liveDemo: module.metadata.liveDemo,
+    content: module.default
   })
 );
 
-
-// Functions now simply return/filter the pre-processed arrays
 export const getBlogPosts = (): BlogPost[] => {
   return allBlogPosts;
 };
