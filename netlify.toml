@@ -15,4 +15,10 @@
   enabled = true
   path = "/admin"
   allowed_roles = ["admin"]
-  allowed_emails = ["saurabh.alhat@gmail.com"] 
+  allowed_emails = ["saurabh.alhat@gmail.com"]
+
+[visual]
+  enable = true
+  host = "saurabhalhatportfolio.netlify.app"
+  disable_identity = false
+  base_url = "/" 

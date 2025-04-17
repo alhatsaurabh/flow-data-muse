@@ -1,0 +1,24 @@
+{
+  "components": {
+    "BlogPost": {
+      "path": "src/pages/BlogPost.tsx",
+      "fields": ["title", "date", "readTime", "imageUrl", "excerpt", "tags", "content"]
+    },
+    "ProjectPost": {
+      "path": "src/pages/ProjectPost.tsx",
+      "fields": ["title", "description", "image", "tags", "category", "github", "liveDemo", "content"]
+    }
+  },
+  "collections": {
+    "blog": {
+      "folder": "src/posts/blog",
+      "create": true,
+      "fields": ["title", "date", "readTime", "imageUrl", "excerpt", "tags", "content"]
+    },
+    "case-studies": {
+      "folder": "src/posts/case-studies",
+      "create": true,
+      "fields": ["title", "description", "image", "tags", "category", "github", "liveDemo", "content"]
+    }
+  }
+} 
