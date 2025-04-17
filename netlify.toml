@@ -21,4 +21,16 @@
   enable = true
   host = "saurabhalhatportfolio.netlify.app"
   disable_identity = false
-  base_url = "/" 
+  base_url = "/"
+
+[context.preview]
+  command = "npm run build:dev"
+
+[context.preview.environment]
+  NODE_ENV = "development"
+
+[dev]
+  framework = "vite"
+  targetPort = 8080
+  port = 3000
+  command = "npm run dev" 
