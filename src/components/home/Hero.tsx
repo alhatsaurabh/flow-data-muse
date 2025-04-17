@@ -1,4 +1,3 @@
-
 import { ChevronDown, Github, Mail, Linkedin, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
@@ -59,7 +58,7 @@ const Hero = () => {
           <a href="https://github.com/alhatsaurabh" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
             <Github size={24} />
           </a>
-          <a href="https://linkedin.com/in/alhatsaurabh" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
+          <a href="https://www.linkedin.com/in/alhatsaurabh/" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
             <Linkedin size={24} />
           </a>
           <a href="mailto:alhatsaurabh@gmail.com" className="text-muted-foreground hover:text-primary transition-colors">
@@ -84,10 +83,7 @@ const Hero = () => {
           transition={{ duration: 0.5, delay: 0.6 }}
           className="flex flex-col sm:flex-row gap-4 mb-16"
         >
-          <Button asChild size="lg" className="px-8">
-            <Link to="/projects">View Projects</Link>
-          </Button>
-          <Button asChild variant="outline" size="lg" className="gap-2">
+          <Button asChild size="lg" className="gap-2">
             <a href="/resume.pdf" download>
               Download CV <Download className="h-4 w-4" />
             </a>

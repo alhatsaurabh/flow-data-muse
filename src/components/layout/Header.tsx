@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Moon, Sun, Menu, X } from 'lucide-react';
@@ -96,131 +95,149 @@ const Header = () => {
     }
   };
 
+  // Return a Fragment to render Header and Mobile Menu as siblings
   return (
-    <header 
-      className={cn(
-        'fixed top-0 left-0 w-full z-50 transition-all duration-300 py-3 px-4 md:py-4 md:px-6',
-        isScrolled ? 'bg-background/90 backdrop-blur-md border-b shadow-sm' : 'bg-transparent'
-      )}
-    >
-      <div className="container mx-auto flex justify-between items-center">
-        {/* Logo */}
-        <Link to="/" className="text-xl font-bold text-foreground flex items-center gap-2 relative z-20">
-          <span className="text-primary">Data</span>Analyst
-        </Link>
+    <>
+      <header 
+        className={cn(
+          'fixed top-0 left-0 w-full z-50 transition-all duration-300 py-3 px-4 md:py-4 md:px-6',
+          isScrolled ? 'bg-background/90 backdrop-blur-md border-b shadow-sm' : 'bg-transparent'
+        )}
+      >
+        <div className="container mx-auto flex justify-between items-center">
+          {/* Logo */}
+          <Link to="/" className="text-xl font-bold text-foreground flex items-center gap-2 relative z-20">
+            <span className="text-primary">Data</span>Analyst
+          </Link>
 
-        {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center space-x-6">
-          {navLinks.map((link) => (
-            <Link
-              key={link.name}
-              to={link.path}
+          {/* Desktop Navigation */}
+          <nav className="hidden md:flex items-center space-x-6">
+            {navLinks.map((link) => (
+              <Link
+                key={link.name}
+                to={link.path}
+                className={cn(
+                  'text-sm font-medium transition-colors hover:text-primary',
+                  location.pathname === link.path ? 'text-primary' : 'text-muted-foreground'
+                )}
+              >
+                {link.name}
+              </Link>
+            ))}
+            
+            {/* Theme Toggle */}
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              onClick={toggleTheme} 
+              aria-label="Toggle theme"
+              className="focus:outline-none"
+            >
+              {theme === 'dark' ? (
+                <Sun className="h-5 w-5" />
+              ) : (
+                <Moon className="h-5 w-5" />
+              )}
+            </Button>
+          </nav>
+
+          {/* Mobile Menu Button and Theme Toggle */} 
+          <div className="flex items-center md:hidden gap-4 relative z-20">
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              onClick={toggleTheme} 
+              aria-label="Toggle theme"
+              className="focus:outline-none"
+            >
+              {theme === 'dark' ? (
+                <Sun className="h-5 w-5" />
+              ) : (
+                <Moon className="h-5 w-5" />
+              )}
+            </Button>
+            
+            <Button 
+              variant={isScrolled ? "ghost" : "outline"} 
+              size="icon" 
+              onClick={toggleMobileMenu} 
+              aria-label="Toggle menu"
               className={cn(
-                'text-sm font-medium transition-colors hover:text-primary',
-                location.pathname === link.path ? 'text-primary' : 'text-muted-foreground'
+                "focus:outline-none",
+                !isScrolled && "bg-background/50 border-background/50 backdrop-blur-sm"
               )}
             >
-              {link.name}
-            </Link>
-          ))}
-          
-          {/* Theme Toggle */}
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            onClick={toggleTheme} 
-            aria-label="Toggle theme"
-            className="focus:outline-none"
-          >
-            {theme === 'dark' ? (
-              <Sun className="h-5 w-5" />
-            ) : (
-              <Moon className="h-5 w-5" />
-            )}
-          </Button>
-        </nav>
+              {isMobileMenuOpen ? (
+                <X className="h-5 w-5" />
+              ) : (
+                <Menu className="h-5 w-5" />
+              )}
+            </Button>
+          </div>
 
-        {/* Mobile Menu Button */}
-        <div className="flex items-center md:hidden gap-4 relative z-20">
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            onClick={toggleTheme} 
-            aria-label="Toggle theme"
-            className="focus:outline-none"
-          >
-            {theme === 'dark' ? (
-              <Sun className="h-5 w-5" />
-            ) : (
-              <Moon className="h-5 w-5" />
-            )}
-          </Button>
-          
-          <Button 
-            variant={isScrolled ? "ghost" : "outline"} 
-            size="icon" 
-            onClick={toggleMobileMenu} 
-            aria-label="Toggle menu"
-            className={cn(
-              "focus:outline-none",
-              !isScrolled && "bg-background/50 border-background/50 backdrop-blur-sm"
-            )}
-          >
-            {isMobileMenuOpen ? (
-              <X className="h-5 w-5" />
-            ) : (
-              <Menu className="h-5 w-5" />
-            )}
-          </Button>
+          {/* Mobile Menu is NO LONGER rendered here */}
+
         </div>
+      </header>
 
-        {/* Mobile Menu - Improved with fixed positioning and better styling */}
-        <AnimatePresence>
-          {isMobileMenuOpen && (
+      {/* Mobile Menu - Moved outside header */}
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <motion.div 
+            className="fixed inset-0 z-[100] [transform:translateZ(0)] md:hidden" 
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            variants={menuVariants}
+          >
+            {/* Backdrop */}
             <motion.div 
-              className="fixed inset-0 z-10 md:hidden"
-              initial="hidden"
-              animate="visible"
-              exit="exit"
-              variants={menuVariants}
-            >
-              {/* Backdrop */}
-              <motion.div 
-                className="absolute inset-0 bg-background/95 backdrop-blur-xl"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-              />
-              
-              {/* Menu Content */}
-              <div className="relative h-full flex flex-col pt-20 pb-8 px-6">
-                <nav className="flex flex-col items-center justify-center space-y-8 w-full">
-                  {navLinks.map((link, index) => (
-                    <motion.div 
-                      key={link.name}
-                      variants={itemVariants}
-                      custom={index}
+              className="absolute inset-0 bg-background z-0"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={toggleMobileMenu}
+            />
+            
+            {/* Menu Content Container */}
+            <div className="relative h-full flex flex-col pt-20 pb-8 px-6">
+              {/* Added Close Button Inside Menu */}
+              <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  onClick={toggleMobileMenu} 
+                  aria-label="Close menu"
+                  className="absolute top-4 right-4 text-foreground z-20"
+              >
+                  <X className="h-6 w-6" />
+              </Button>
+
+              <nav className="flex flex-col items-center justify-center space-y-8 w-full">
+                {navLinks.map((link, index) => (
+                  <motion.div 
+                    key={link.name}
+                    variants={itemVariants}
+                    custom={index}
+                  >
+                    <Link
+                      to={link.path}
+                      className={cn(
+                        'text-xl font-medium transition-all hover:text-primary w-full text-center py-3 block',
+                        location.pathname === link.path 
+                          ? 'text-primary border-b-2 border-primary' 
+                          : 'text-muted-foreground'
+                      )}
                     >
-                      <Link
-                        to={link.path}
-                        className={cn(
-                          'text-xl font-medium transition-all hover:text-primary w-full text-center py-3 block',
-                          location.pathname === link.path 
-                            ? 'text-primary border-b-2 border-primary' 
-                            : 'text-muted-foreground'
-                        )}
-                      >
-                        {link.name}
-                      </Link>
-                    </motion.div>
-                  ))}
-                </nav>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
-    </header>
+                      {link.name}
+                    </Link>
+                  </motion.div>
+                ))}
+              </nav>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
   );
 };
 

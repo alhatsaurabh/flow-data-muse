@@ -1,4 +1,3 @@
-
 import { useState, useRef, useEffect } from 'react';
 import { MessageCircle, X, Send } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -21,15 +20,13 @@ const ChatButton = () => {
 
   const toggleChat = () => {
     setIsOpen(!isOpen);
-    // Focus input when chat is opened
     if (!isOpen) {
       setTimeout(() => {
         inputRef.current?.focus();
-      }, 300);
+      }, 300); 
     }
   };
 
-  // Scroll to bottom of messages when new message is added
   useEffect(() => {
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
@@ -40,7 +37,6 @@ const ChatButton = () => {
     e.preventDefault();
     if (!inputText.trim()) return;
     
-    // Add user message
     const userMessage = {
       text: inputText,
       sender: 'user' as const,
@@ -50,7 +46,6 @@ const ChatButton = () => {
     setMessages(prev => [...prev, userMessage]);
     setInputText('');
     
-    // Simulate AI response after a short delay
     setTimeout(() => {
       const aiMessage = {
         text: "Thanks for reaching out! Saurabh will get back to you soon. Feel free to leave your contact details.",
@@ -63,77 +58,105 @@ const ChatButton = () => {
 
   return (
     <>
-      <Button
-        onClick={toggleChat}
-        className="fixed bottom-6 right-6 rounded-full h-14 w-14 shadow-lg p-0 z-50"
+      {/* Chat Toggle Button */}
+      <motion.div
+        initial={{ scale: 0 }}
+        animate={{ scale: 1 }}
+        transition={{ delay: 1, type: 'spring', stiffness: 200 }}
       >
-        {isOpen ? <X size={24} /> : <MessageCircle size={24} />}
-      </Button>
+        <Button
+          onClick={toggleChat}
+          className="fixed bottom-6 right-6 rounded-full h-14 w-14 shadow-lg p-0 z-50 flex items-center justify-center"
+          aria-label={isOpen ? 'Close chat' : 'Open chat'}
+        >
+          <AnimatePresence initial={false} mode="wait">
+            <motion.div
+              key={isOpen ? 'close' : 'message'}
+              initial={{ rotate: -90, opacity: 0, scale: 0.5 }}
+              animate={{ rotate: 0, opacity: 1, scale: 1 }}
+              exit={{ rotate: 90, opacity: 0, scale: 0.5 }}
+              transition={{ duration: 0.2 }}
+            >
+              {isOpen ? <X size={24} /> : <MessageCircle size={24} />}
+            </motion.div>
+          </AnimatePresence>
+        </Button>
+      </motion.div>
       
+      {/* Chat Window */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ opacity: 0, y: 20, scale: 0.9 }}
+            initial={{ opacity: 0, y: 20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 20, scale: 0.9 }}
+            exit={{ opacity: 0, y: 20, scale: 0.95 }}
             transition={{ duration: 0.2 }}
-            className="fixed bottom-24 right-6 w-80 md:w-96 h-96 bg-card rounded-lg shadow-lg overflow-hidden z-50 border"
+            // Adjusted width and height, added max-h
+            className="fixed bottom-24 right-6 w-[calc(100vw-3rem)] max-w-sm h-[60vh] max-h-[500px] bg-card rounded-lg shadow-xl overflow-hidden z-40 border flex flex-col"
           >
-            <div className="bg-primary p-4 text-primary-foreground flex items-center">
-              <Avatar className="mr-3 h-8 w-8">
-                <AvatarImage src="https://images.unsplash.com/photo-1568602471122-7832951cc4c5?w=400&h=400&fit=crop&crop=faces" alt="Saurabh Alhat" />
+            {/* Header */}
+            <div className="bg-primary p-3 text-primary-foreground flex items-center flex-shrink-0 shadow-sm">
+              <Avatar className="mr-3 h-9 w-9 border-2 border-primary-foreground/50"> {/* Added subtle border */}
+                {/* Updated Avatar Image */}
+                <AvatarImage src="/lovable-uploads/3ab82acf-8799-4d78-a428-1a9e58625ab3.jpg" alt="Saurabh Alhat" />
                 <AvatarFallback>SA</AvatarFallback>
               </Avatar>
               <div>
-                <h3 className="font-medium">Chat with Saurabh</h3>
-                <p className="text-xs opacity-80">Usually replies within a day</p>
+                <h3 className="font-semibold text-sm">Chat with Saurabh</h3>
+                <p className="text-xs opacity-80">AI Assistant</p> {/* Updated text */}
               </div>
             </div>
             
-            <div className="flex flex-col h-[calc(100%-64px)]">
-              <div className="flex-1 p-4 overflow-y-auto space-y-4">
-                {messages.map((message, index) => (
+            {/* Messages Area */}
+            <div className="flex-1 p-4 overflow-y-auto space-y-3 scrollbar-thin scrollbar-thumb-muted-foreground/30 scrollbar-track-transparent">
+              {messages.map((message, index) => (
+                <motion.div // Added animation to messages
+                  key={index}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
+                >
                   <div 
-                    key={index}
-                    className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
+                    className={cn(
+                      "max-w-[85%] p-2.5 rounded-xl shadow-sm", // Slightly larger rounding
+                      message.sender === 'user' 
+                        ? "bg-primary text-primary-foreground rounded-br-none" // Style user messages
+                        : "bg-muted rounded-bl-none" // Style AI messages
+                    )}
                   >
-                    <div 
-                      className={cn(
-                        "max-w-[80%] p-3 rounded-lg",
-                        message.sender === 'user' 
-                          ? "bg-primary text-primary-foreground" 
-                          : "bg-muted"
-                      )}
-                    >
-                      <p className="text-sm">{message.text}</p>
-                      <p className="text-xs opacity-70 mt-1">
-                        {message.timestamp.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
-                      </p>
-                    </div>
+                    <p className="text-sm break-words">{message.text}</p> {/* Ensure words break */}
+                    {/* Timestamp can be added back if needed */}
+                    {/* <p className="text-xs opacity-70 mt-1 text-right">
+                      {message.timestamp.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                    </p> */}
                   </div>
-                ))}
-                <div ref={messagesEndRef} />
-              </div>
-              
-              <form onSubmit={handleSubmit} className="p-3 border-t">
-                <div className="flex">
-                  <input
-                    ref={inputRef}
-                    type="text"
-                    value={inputText}
-                    onChange={(e) => setInputText(e.target.value)}
-                    placeholder="Type your message..."
-                    className="flex-1 p-2 rounded-l-md border border-r-0 focus:outline-none focus:ring-1 focus:ring-primary bg-background"
-                  />
-                  <button 
-                    type="submit"
-                    className="bg-primary text-primary-foreground p-2 rounded-r-md hover:bg-primary/90 transition-colors"
-                  >
-                    <Send className="h-4 w-4" />
-                  </button>
-                </div>
-              </form>
+                </motion.div>
+              ))}
+              <div ref={messagesEndRef} />
             </div>
+            
+            {/* Input Area */}
+            <form onSubmit={handleSubmit} className="p-3 border-t bg-background flex-shrink-0">
+              <div className="flex items-center bg-muted rounded-md overflow-hidden focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2 focus-within:ring-offset-background">
+                <input
+                  ref={inputRef}
+                  type="text"
+                  value={inputText}
+                  onChange={(e) => setInputText(e.target.value)}
+                  placeholder="Type a message..." // Slightly friendlier placeholder
+                  className="flex-1 p-2 h-10 bg-transparent focus:outline-none text-sm placeholder:text-muted-foreground"
+                />
+                <button 
+                  type="submit"
+                  disabled={!inputText.trim()} // Disable if input is empty
+                  className="text-primary p-2 rounded-md hover:bg-primary/10 disabled:opacity-50 disabled:hover:bg-transparent transition-colors mr-1"
+                  aria-label="Send message"
+                >
+                  <Send className="h-5 w-5" />
+                </button>
+              </div>
+            </form>
           </motion.div>
         )}
       </AnimatePresence>

@@ -1,6 +1,5 @@
-
 import { Link } from 'react-router-dom';
-import { Github, Linkedin, Mail, Twitter } from 'lucide-react';
+import { Github, Linkedin, Mail } from 'lucide-react';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -32,16 +31,13 @@ const Footer = () => {
           <div className="space-y-4">
             <h3 className="text-sm font-semibold">Connect</h3>
             <div className="flex space-x-4">
-              <a href="https://github.com" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+              <a href="https://github.com/alhatsaurabh" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
                 <Github className="h-5 w-5 text-muted-foreground hover:text-primary transition-colors" />
               </a>
-              <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+              <a href="https://www.linkedin.com/in/alhatsaurabh/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
                 <Linkedin className="h-5 w-5 text-muted-foreground hover:text-primary transition-colors" />
               </a>
-              <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" aria-label="Twitter">
-                <Twitter className="h-5 w-5 text-muted-foreground hover:text-primary transition-colors" />
-              </a>
-              <a href="mailto:hello@example.com" aria-label="Email">
+              <a href="mailto:alhatsaurabh@gmail.com" aria-label="Email">
                 <Mail className="h-5 w-5 text-muted-foreground hover:text-primary transition-colors" />
               </a>
             </div>

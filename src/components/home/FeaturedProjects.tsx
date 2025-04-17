@@ -1,44 +1,16 @@
-
 import { ArrowRight, ExternalLink, Github } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { getCaseStudies, CaseStudy } from '@/lib/markdown';
 
 const FeaturedProjects = () => {
-  const projects = [
-    {
-      id: 1,
-      title: 'E-commerce Sales Analysis',
-      description: 'Analyzed 3 years of sales data to identify trends and optimize inventory management, resulting in a 15% increase in revenue.',
-      image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=2070',
-      tags: ['Python', 'Tableau', 'SQL'],
-      link: '/projects/ecommerce-analysis',
-      github: 'https://github.com/alhatsaurabh/ecommerce-analysis',
-      liveDemo: 'https://example.com/ecommerce-demo',
-    },
-    {
-      id: 2,
-      title: 'Marketing Campaign Effectiveness',
-      description: 'Evaluated performance metrics across digital marketing channels to optimize ad spend and increase ROI by 22%.',
-      image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=2015',
-      tags: ['R', 'Google Analytics', 'Data Studio'],
-      link: '/projects/marketing-analysis',
-      github: 'https://github.com/alhatsaurabh/marketing-analysis',
-      liveDemo: 'https://example.com/marketing-demo',
-    },
-    {
-      id: 3,
-      title: 'Customer Segmentation',
-      description: 'Developed customer segments based on purchasing behavior, enabling targeted marketing strategies.',
-      image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=2070',
-      tags: ['Python', 'Clustering', 'Tableau'],
-      link: '/projects/customer-segmentation',
-      github: 'https://github.com/alhatsaurabh/customer-segmentation',
-      liveDemo: 'https://example.com/segmentation-demo',
-    },
-  ];
+  const allCaseStudies = getCaseStudies();
+  const featuredCaseStudies = allCaseStudies
+    .filter(project => (project as any).featured)
+    .slice(0, 3);
 
   const container = {
     hidden: { opacity: 0 },
@@ -54,6 +26,10 @@ const FeaturedProjects = () => {
     hidden: { opacity: 0, y: 20 },
     show: { opacity: 1, y: 0, transition: { duration: 0.5 } }
   };
+
+  if (featuredCaseStudies.length === 0) {
+    return null;
+  }
 
   return (
     <section id="featured-section" className="py-24">
@@ -78,7 +54,7 @@ const FeaturedProjects = () => {
           initial="hidden"
           animate="show"
         >
-          {projects.map((project) => (
+          {featuredCaseStudies.map((project) => (
             <motion.div
               key={project.id}
               variants={item}
@@ -131,7 +107,7 @@ const FeaturedProjects = () => {
                 </CardContent>
                 <CardFooter>
                   <Button asChild variant="ghost" className="gap-2 w-full justify-center">
-                    <Link to={project.link}>
+                    <Link to={`/projects/${project.slug}`}>
                       View Case Study <ArrowRight className="h-4 w-4" />
                     </Link>
                   </Button>
