@@ -24,15 +24,18 @@ export default defineConfig({
     },
   },
   optimizeDeps: {
-    include: ['gray-matter'],
+    include: ['gray-matter', 'react-dom/client'],
     force: true // Force dependency optimization
   },
   build: {
     rollupOptions: {
-      external: ['gray-matter'],
+      external: ['gray-matter', 'react-dom/client', 'react', 'react-dom'],
       output: {
         globals: {
-          'gray-matter': 'matter'
+          'gray-matter': 'matter',
+          'react': 'React',
+          'react-dom': 'ReactDOM',
+          'react-dom/client': 'ReactDOMClient'
         }
       }
     },
