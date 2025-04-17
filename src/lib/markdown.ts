@@ -24,8 +24,7 @@ export interface CaseStudy {
 }
 
 interface MarkdownModule {
-  default: string;
-  metadata: {
+  attributes: {
     title: string;
     date: string;
     readTime: string;
@@ -39,6 +38,7 @@ interface MarkdownModule {
     github?: string;
     liveDemo?: string;
   };
+  html: string;
 }
 
 // Use Vite's import.meta.glob to import all markdown files
@@ -61,14 +61,14 @@ const allBlogPosts: BlogPost[] = processMarkdownFiles<BlogPost>(
   (path) => path.match(/\/src\/posts\/blog\/(.*)\.md$/)?.[1] ?? '',
   (slug, module) => ({
     slug,
-    title: module.metadata.title,
-    date: module.metadata.date,
-    readTime: module.metadata.readTime,
-    imageUrl: module.metadata.imageUrl,
-    excerpt: module.metadata.excerpt,
-    content: module.default,
-    tags: module.metadata.tags,
-    featured: module.metadata.featured
+    title: module.attributes.title,
+    date: module.attributes.date,
+    readTime: module.attributes.readTime,
+    imageUrl: module.attributes.imageUrl,
+    excerpt: module.attributes.excerpt,
+    content: module.html,
+    tags: module.attributes.tags,
+    featured: module.attributes.featured
   })
 ).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
@@ -77,15 +77,15 @@ const allCaseStudies: CaseStudy[] = processMarkdownFiles<CaseStudy>(
   (path) => path.match(/\/src\/posts\/case-studies\/(.*)\.md$/)?.[1] ?? '',
   (slug, module, index) => ({
     id: index !== undefined ? index + 1 : 0,
-    title: module.metadata.title,
-    description: module.metadata.description || '',
-    image: module.metadata.image || '',
-    tags: module.metadata.tags || [],
-    category: module.metadata.category || '',
+    title: module.attributes.title,
+    description: module.attributes.description || '',
+    image: module.attributes.image || '',
+    tags: module.attributes.tags || [],
+    category: module.attributes.category || '',
     slug,
-    github: module.metadata.github,
-    liveDemo: module.metadata.liveDemo,
-    content: module.default
+    github: module.attributes.github,
+    liveDemo: module.attributes.liveDemo,
+    content: module.html
   })
 );
 
