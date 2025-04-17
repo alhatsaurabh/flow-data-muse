@@ -1,0 +1,40 @@
+backend:
+  name: github
+  repo: alhatsaurabh/flow-data-muse
+  branch: main
+  base_url: https://saurabhalhatportfolio.netlify.app
+
+media_folder: "public/images"
+public_folder: "/images"
+
+collections:
+  - name: "case-studies"
+    label: "Case Studies"
+    folder: "src/posts/case-studies"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { label: "Title", name: "title", widget: "string" }
+      - { label: "Description", name: "description", widget: "text" }
+      - { label: "Image", name: "image", widget: "image" }
+      - { label: "Tags", name: "tags", widget: "list" }
+      - { label: "Category", name: "category", widget: "string" }
+      - { label: "GitHub Link", name: "github", widget: "string", required: false }
+      - { label: "Live Demo Link", name: "liveDemo", widget: "string", required: false }
+      - { label: "Featured", name: "featured", widget: "boolean", default: false }
+      - { label: "Content", name: "body", widget: "markdown" }
+
+  - name: "blog"
+    label: "Blog Posts"
+    folder: "src/posts/blog"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { label: "Title", name: "title", widget: "string" }
+      - { label: "Date", name: "date", widget: "datetime" }
+      - { label: "Read Time", name: "readTime", widget: "string" }
+      - { label: "Image URL", name: "imageUrl", widget: "image" }
+      - { label: "Excerpt", name: "excerpt", widget: "text" }
+      - { label: "Tags", name: "tags", widget: "list" }
+      - { label: "Featured", name: "featured", widget: "boolean", default: false }
+      - { label: "Content", name: "body", widget: "markdown" } 
