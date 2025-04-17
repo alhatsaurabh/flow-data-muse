@@ -20,8 +20,12 @@ export default defineConfig({
   },
   plugins: [
     react({
-      // Use classic runtime for React 17
-      jsxRuntime: 'classic'
+      jsxRuntime: 'classic',
+      babel: {
+        plugins: [
+          ['@babel/plugin-transform-react-jsx', { runtime: 'classic' }]
+        ]
+      }
     }),
     nodePolyfills(),
     markdown()
@@ -29,21 +33,24 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
-    },
+    }
   },
   optimizeDeps: {
     include: ['gray-matter', 'react-dom/client'],
     force: true // Force dependency optimization
   },
   build: {
+    outDir: 'dist',
+    assetsDir: 'assets',
+    sourcemap: true,
     rollupOptions: {
-      external: ['gray-matter', 'react-dom/client', 'react', 'react-dom'],
+      input: {
+        main: path.resolve(__dirname, 'index.html')
+      },
       output: {
-        globals: {
-          'gray-matter': 'matter',
-          'react': 'React',
-          'react-dom': 'ReactDOM',
-          'react-dom/client': 'ReactDOMClient'
+        manualChunks: {
+          'vendor': ['react', 'react-dom'],
+          'markdown': ['react-markdown', 'remark-gfm']
         }
       }
     },

@@ -69,6 +69,7 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
+    "@babel/plugin-transform-react-jsx": "^7.25.9",
     "@mdx-js/react": "^2.3.0",
     "@mdx-js/rollup": "^2.3.0",
     "@tailwindcss/typography": "^0.5.16",
