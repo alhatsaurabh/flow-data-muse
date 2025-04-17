@@ -11,7 +11,10 @@ export default defineConfig({
   },
   plugins: [
     react(),
-    nodePolyfills(),
+    nodePolyfills({
+      // To support gray-matter which uses Node.js modules
+      include: ['path', 'fs', 'buffer']
+    }),
   ],
   resolve: {
     alias: {
