@@ -11,7 +11,10 @@ export default defineConfig({
     port: 8080,
   },
   plugins: [
-    react(),
+    react({
+      // Use classic runtime for React 17
+      jsxRuntime: 'classic'
+    }),
     nodePolyfills(),
     markdown()
   ],
@@ -21,7 +24,8 @@ export default defineConfig({
     },
   },
   optimizeDeps: {
-    include: ['gray-matter']
+    include: ['gray-matter'],
+    force: true // Force dependency optimization
   },
   build: {
     rollupOptions: {
@@ -31,6 +35,9 @@ export default defineConfig({
           'gray-matter': 'matter'
         }
       }
+    },
+    commonjsOptions: {
+      transformMixedEsModules: true
     }
   }
 });
