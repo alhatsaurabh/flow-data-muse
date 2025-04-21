@@ -7,6 +7,8 @@ import { Badge } from '@/components/ui/badge';
 import { getBlogPostBySlug } from '@/lib/markdown';
 import { MDXProvider } from '@mdx-js/react';
 import { MDXRemote } from 'next-mdx-remote';
+import { useEffect, useState } from 'react';
+import { BlogPost as BlogPostType } from '@/lib/markdown';
 
 const components = {
   h1: ({ children }: { children: React.ReactNode }) => (
@@ -51,18 +53,55 @@ const components = {
 
 const BlogPost = () => {
   const { slug } = useParams();
-  const post = getBlogPostBySlug(slug || '');
+  const [post, setPost] = useState<BlogPostType | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  console.log('Post:', post);
-  console.log('Content:', post?.content);
+  useEffect(() => {
+    const fetchPost = async () => {
+      try {
+        setLoading(true);
+        if (!slug) {
+          setError('No slug provided');
+          setLoading(false);
+          return;
+        }
+        const fetchedPost = await getBlogPostBySlug(slug);
+        if (fetchedPost) {
+          setPost(fetchedPost);
+        } else {
+          setError('Post not found');
+        }
+      } catch (err) {
+        console.error('Error fetching blog post:', err);
+        setError('Failed to load blog post');
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  if (!post) {
+    fetchPost();
+  }, [slug]);
+  
+  if (loading) {
+    return (
+      <PageTransition>
+        <div className="container px-4 md:px-6 py-24">
+          <div className="text-center">
+            <h1 className="text-4xl font-bold mb-4">Loading...</h1>
+          </div>
+        </div>
+      </PageTransition>
+    );
+  }
+
+  if (error || !post) {
     return (
       <PageTransition>
         <div className="container px-4 md:px-6 py-24">
           <div className="text-center">
             <h1 className="text-4xl font-bold mb-4">404 - Post Not Found</h1>
-            <p className="text-muted-foreground mb-8">The blog post you're looking for doesn't exist.</p>
+            <p className="text-muted-foreground mb-8">{error || "The blog post you're looking for doesn't exist."}</p>
             <Button asChild>
               <Link to="/blog">
                 <ArrowLeft className="mr-2 h-4 w-4" />

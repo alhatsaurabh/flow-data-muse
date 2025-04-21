@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -88,12 +88,30 @@ const ProjectCard = ({
 );
 
 const Projects = () => {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [activeTab, setActiveTab] = useState('all');
+  const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [isSearchFocused, setIsSearchFocused] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [projects, setProjects] = useState<CaseStudy[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const isMobile = useIsMobile();
 
-  const projects = getCaseStudies();
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        setLoading(true);
+        const fetchedProjects = await getCaseStudies();
+        setProjects(fetchedProjects);
+      } catch (err) {
+        console.error('Error fetching projects:', err);
+        setError('Failed to load projects');
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchProjects();
+  }, []);
 
   const categories = useMemo(() => 
     ['all', ...new Set(projects.map(p => p.category))]
@@ -106,7 +124,7 @@ const Projects = () => {
                          project.description.toLowerCase().includes(query) ||
                          project.tags.some(tag => tag.toLowerCase().includes(query));
     
-    const matchesCategory = activeTab === 'all' || project.category.toLowerCase() === activeTab.toLowerCase();
+    const matchesCategory = selectedCategory === 'all' || project.category.toLowerCase() === selectedCategory.toLowerCase();
     
     return matchesSearch && matchesCategory;
   });
@@ -135,6 +153,31 @@ const Projects = () => {
       </TabsList>
   );
 
+  if (loading) {
+    return (
+      <PageTransition>
+        <div className="container px-4 md:px-6 py-24">
+          <div className="text-center">
+            <h1 className="text-4xl font-bold mb-4">Loading...</h1>
+          </div>
+        </div>
+      </PageTransition>
+    );
+  }
+
+  if (error) {
+    return (
+      <PageTransition>
+        <div className="container px-4 md:px-6 py-24">
+          <div className="text-center">
+            <h1 className="text-4xl font-bold mb-4">Error</h1>
+            <p className="text-muted-foreground mb-8">{error}</p>
+          </div>
+        </div>
+      </PageTransition>
+    );
+  }
+
   return (
     <PageTransition>
       <div className="container px-4 md:px-6 py-24">
@@ -162,8 +205,8 @@ const Projects = () => {
         <Tabs 
             defaultValue="all" 
             className="w-full mb-12" 
-            onValueChange={setActiveTab} 
-            value={activeTab}
+            onValueChange={setSelectedCategory} 
+            value={selectedCategory}
         >
           {isMobile ? (
             <div 
@@ -196,13 +239,13 @@ const Projects = () => {
         ) : (
           <div className="text-center py-12">
              <p className="text-muted-foreground">No projects found matching your criteria.</p>
-             {(searchQuery || activeTab !== 'all') && (
+             {(searchQuery || selectedCategory !== 'all') && (
                 <Button 
                     variant="outline" 
                     className="mt-4"
                     onClick={() => {
                         setSearchQuery('');
-                        setActiveTab('all');
+                        setSelectedCategory('all');
                     }}
                 >
                     Clear filters

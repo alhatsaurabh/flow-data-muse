@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -59,8 +59,27 @@ const BlogPostCard = ({ post }: { post: BlogPost }) => (
 
 const Blog = () => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [isSearchFocused, setIsSearchFocused] = useState(false); // State for search focus
-  const allPosts = getBlogPosts();
+  const [isSearchFocused, setIsSearchFocused] = useState(false);
+  const [allPosts, setAllPosts] = useState<BlogPost[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchPosts = async () => {
+      try {
+        setLoading(true);
+        const posts = await getBlogPosts();
+        setAllPosts(posts);
+      } catch (err) {
+        console.error('Error fetching blog posts:', err);
+        setError('Failed to load blog posts');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPosts();
+  }, []);
 
   const featuredPosts = allPosts.filter(post => post.featured);
   const otherPosts = allPosts.filter(post => !post.featured);
@@ -89,6 +108,31 @@ const Blog = () => {
       }
     }
   };
+
+  if (loading) {
+    return (
+      <PageTransition>
+        <div className="container px-4 md:px-6 py-24">
+          <div className="text-center">
+            <h1 className="text-4xl font-bold mb-4">Loading...</h1>
+          </div>
+        </div>
+      </PageTransition>
+    );
+  }
+
+  if (error) {
+    return (
+      <PageTransition>
+        <div className="container px-4 md:px-6 py-24">
+          <div className="text-center">
+            <h1 className="text-4xl font-bold mb-4">Error</h1>
+            <p className="text-muted-foreground mb-8">{error}</p>
+          </div>
+        </div>
+      </PageTransition>
+    );
+  }
 
   return (
     <PageTransition>

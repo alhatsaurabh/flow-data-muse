@@ -5,9 +5,28 @@ import { Badge } from '@/components/ui/badge';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { getCaseStudies, CaseStudy } from '@/lib/markdown';
+import { useState, useEffect } from 'react';
 
 const FeaturedProjects = () => {
-  const allCaseStudies = getCaseStudies();
+  const [allCaseStudies, setAllCaseStudies] = useState<CaseStudy[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        setLoading(true);
+        const projects = await getCaseStudies();
+        setAllCaseStudies(projects);
+      } catch (error) {
+        console.error('Error fetching case studies:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProjects();
+  }, []);
+
   const featuredCaseStudies = allCaseStudies
     .filter(project => project.featured === true)
     .slice(0, 3);
@@ -26,6 +45,23 @@ const FeaturedProjects = () => {
     hidden: { opacity: 0, y: 20 },
     show: { opacity: 1, y: 0, transition: { duration: 0.5 } }
   };
+
+  if (loading) {
+    return (
+      <section id="featured-section" className="py-24">
+        <div className="container px-4 md:px-6">
+          <div className="flex flex-col md:flex-row md:items-center justify-between mb-12 gap-4">
+            <div>
+              <h2 className="text-3xl font-bold tracking-tight mb-2">Featured Projects</h2>
+              <p className="text-muted-foreground max-w-2xl">
+                Loading featured projects...
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   if (featuredCaseStudies.length === 0) {
     return null;

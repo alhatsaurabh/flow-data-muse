@@ -49,6 +49,10 @@ interface MarkdownModule {
 const blogPostModules = import.meta.glob<MarkdownModule>('/src/posts/blog/*.md', { eager: true });
 const caseStudyModules = import.meta.glob<MarkdownModule>('/src/posts/case-studies/*.md', { eager: true });
 
+let allBlogPosts: BlogPost[] = [];
+let allCaseStudies: CaseStudy[] = [];
+let initialized = false;
+
 const processMarkdownFiles = async <T>(
   modules: Record<string, MarkdownModule>,
   extractSlug: (path: string) => string,
@@ -63,64 +67,116 @@ const processMarkdownFiles = async <T>(
   return results;
 };
 
-const allBlogPosts: BlogPost[] = await processMarkdownFiles<BlogPost>(
-  blogPostModules,
-  (path) => path.match(/\/src\/posts\/blog\/(.*)\.md$/)?.[1] ?? '',
-  async (slug, module) => {
-    const { content, data } = matter(module.body);
-    const mdxSource = await serialize(content);
-    return {
-      slug,
-      title: module.attributes.title,
-      date: module.attributes.date,
-      readTime: module.attributes.readTime,
-      imageUrl: module.attributes.imageUrl,
-      excerpt: module.attributes.excerpt,
-      content: mdxSource,
-      tags: module.attributes.tags,
-      featured: module.attributes.featured
-    };
-  }
-).then(posts => posts.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()));
+// Initialize function to process all markdown files
+const initialize = async () => {
+  if (initialized) return;
+  
+  // Process blog posts
+  const blogPosts = await processMarkdownFiles<BlogPost>(
+    blogPostModules,
+    (path) => path.match(/\/src\/posts\/blog\/(.*)\.md$/)?.[1] ?? '',
+    async (slug, module) => {
+      try {
+        const { content, data } = matter(module.body);
+        const mdxSource = await serialize(content);
+        return {
+          slug,
+          title: module.attributes.title,
+          date: module.attributes.date,
+          readTime: module.attributes.readTime,
+          imageUrl: module.attributes.imageUrl,
+          excerpt: module.attributes.excerpt,
+          content: mdxSource,
+          tags: module.attributes.tags,
+          featured: module.attributes.featured
+        };
+      } catch (error) {
+        console.error(`Error processing blog post ${slug}:`, error);
+        return {
+          slug,
+          title: module.attributes.title,
+          date: module.attributes.date,
+          readTime: module.attributes.readTime,
+          imageUrl: module.attributes.imageUrl,
+          excerpt: module.attributes.excerpt,
+          content: "Error processing content",
+          tags: module.attributes.tags,
+          featured: module.attributes.featured
+        };
+      }
+    }
+  );
+  
+  allBlogPosts = blogPosts.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  
+  // Process case studies
+  const caseStudies = await processMarkdownFiles<CaseStudy>(
+    caseStudyModules,
+    (path) => path.match(/\/src\/posts\/case-studies\/(.*)\.md$/)?.[1] ?? '',
+    async (slug, module, index) => {
+      try {
+        const { content, data } = matter(module.body);
+        const mdxSource = await serialize(content);
+        return {
+          id: index !== undefined ? index + 1 : 0,
+          title: module.attributes.title,
+          description: module.attributes.description || '',
+          image: module.attributes.image || '',
+          tags: module.attributes.tags || [],
+          category: module.attributes.category || '',
+          slug,
+          github: module.attributes.github,
+          liveDemo: module.attributes.liveDemo,
+          content: mdxSource,
+          featured: module.attributes.featured
+        };
+      } catch (error) {
+        console.error(`Error processing case study ${slug}:`, error);
+        return {
+          id: index !== undefined ? index + 1 : 0,
+          title: module.attributes.title,
+          description: module.attributes.description || '',
+          image: module.attributes.image || '',
+          tags: module.attributes.tags || [],
+          category: module.attributes.category || '',
+          slug,
+          github: module.attributes.github,
+          liveDemo: module.attributes.liveDemo,
+          content: "Error processing content",
+          featured: module.attributes.featured
+        };
+      }
+    }
+  );
+  
+  allCaseStudies = caseStudies;
+  initialized = true;
+};
 
-const allCaseStudies: CaseStudy[] = await processMarkdownFiles<CaseStudy>(
-  caseStudyModules,
-  (path) => path.match(/\/src\/posts\/case-studies\/(.*)\.md$/)?.[1] ?? '',
-  async (slug, module, index) => {
-    const { content, data } = matter(module.body);
-    const mdxSource = await serialize(content);
-    return {
-      id: index !== undefined ? index + 1 : 0,
-      title: module.attributes.title,
-      description: module.attributes.description || '',
-      image: module.attributes.image || '',
-      tags: module.attributes.tags || [],
-      category: module.attributes.category || '',
-      slug,
-      github: module.attributes.github,
-      liveDemo: module.attributes.liveDemo,
-      content: mdxSource,
-      featured: module.attributes.featured
-    };
-  }
-);
+// Initialize the data immediately
+initialize();
 
-export const getBlogPosts = (): BlogPost[] => {
+export const getBlogPosts = async (): Promise<BlogPost[]> => {
+  if (!initialized) await initialize();
   return allBlogPosts;
 };
 
-export const getCaseStudies = (): CaseStudy[] => {
+export const getCaseStudies = async (): Promise<CaseStudy[]> => {
+  if (!initialized) await initialize();
   return allCaseStudies;
 };
 
-export const getFeaturedBlogPosts = (): BlogPost[] => {
+export const getFeaturedBlogPosts = async (): Promise<BlogPost[]> => {
+  if (!initialized) await initialize();
   return allBlogPosts.filter(post => post.featured);
 };
 
-export const getBlogPostBySlug = (slug: string): BlogPost | undefined => {
+export const getBlogPostBySlug = async (slug: string): Promise<BlogPost | undefined> => {
+  if (!initialized) await initialize();
   return allBlogPosts.find(post => post.slug === slug);
 };
 
-export const getCaseStudyBySlug = (slug: string): CaseStudy | undefined => {
+export const getCaseStudyBySlug = async (slug: string): Promise<CaseStudy | undefined> => {
+  if (!initialized) await initialize();
   return allCaseStudies.find(study => study.slug === slug);
 }; 
