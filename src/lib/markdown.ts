@@ -28,12 +28,12 @@ export interface CaseStudy {
 }
 
 interface MarkdownModule {
-  attributes: {
-    title: string;
-    date: string;
-    readTime: string;
-    imageUrl: string;
-    excerpt: string;
+  attributes?: {
+    title?: string;
+    date?: string;
+    readTime?: string;
+    imageUrl?: string;
+    excerpt?: string;
     tags?: string[];
     featured?: boolean;
     description?: string;
@@ -42,7 +42,11 @@ interface MarkdownModule {
     github?: string;
     liveDemo?: string;
   };
-  body: string;
+  body?: string;
+  html?: string;
+  content?: string;
+  default?: string | any;
+  [key: string]: any; // Allow any other properties that might be present
 }
 
 // Sample blog post for testing and fallback
@@ -85,8 +89,25 @@ let caseStudyModules: Record<string, MarkdownModule> = {};
 function initializeModules() {
   try {
     // Make path patterns more flexible to find markdown files in the build
-    blogPostModules = import.meta.glob<MarkdownModule>(['/../posts/blog/*.md', '/src/posts/blog/*.md', './posts/blog/*.md', 'src/posts/blog/*.md'], { eager: true });
-    caseStudyModules = import.meta.glob<MarkdownModule>(['/../posts/case-studies/*.md', '/src/posts/case-studies/*.md', './posts/case-studies/*.md', 'src/posts/case-studies/*.md'], { eager: true });
+    blogPostModules = import.meta.glob<MarkdownModule>([
+      '/src/posts/blog/*.md', 
+      'src/posts/blog/*.md',
+      '/public/posts/blog/*.md',
+      'public/posts/blog/*.md',
+      '/posts/blog/*.md',
+      './posts/blog/*.md',
+      'posts/blog/*.md'
+    ], { eager: true });
+    
+    caseStudyModules = import.meta.glob<MarkdownModule>([
+      '/src/posts/case-studies/*.md',
+      'src/posts/case-studies/*.md',
+      '/public/posts/case-studies/*.md',
+      'public/posts/case-studies/*.md',
+      '/posts/case-studies/*.md',
+      './posts/case-studies/*.md',
+      'posts/case-studies/*.md'
+    ], { eager: true });
     
     // Add debug logging
     console.log('Blog post modules available:', Object.keys(blogPostModules).length);
@@ -112,9 +133,13 @@ async function processMarkdownFiles<T>(
     return [];
   }
   
+  console.log('Processing markdown files, paths:', Object.keys(modules));
+  
   const results = await Promise.all(
     Object.entries(modules).map(async ([path, module], index) => {
-      const slug = extractSlug(path);
+      // Extract slug from any path pattern
+      const slug = path.split('/').pop()?.replace('.md', '') || '';
+      console.log('Processing file:', path, 'with slug:', slug);
       return processData(slug, module, index);
     })
   );
@@ -133,34 +158,75 @@ async function initialize() {
     if (Object.keys(blogPostModules).length > 0) {
       blogPosts = await processMarkdownFiles<BlogPost>(
         blogPostModules,
-        (path) => path.match(/\/([^\/]+)\.md$/)?.[1] ?? '',
+        (path) => path.split('/').pop()?.replace('.md', '') || '',
         async (slug, module) => {
           try {
-            const { content, data } = matter(module.body);
-            const mdxSource = await serialize(content);
+            // Handle different module formats - sometimes the content is in module.body, 
+            // sometimes directly in module, sometimes in module.default
+            let content = '';
+            let frontmatter: any = {};
+            
+            console.log('Module for', slug, ':', JSON.stringify(module).slice(0, 200) + '...');
+            
+            if (typeof module === 'string') {
+              // Direct content as string
+              const { content: parsedContent, data } = matter(module);
+              content = parsedContent;
+              frontmatter = data;
+            } else if (module.body) {
+              // Content in body property (common in vite-plugin-markdown)
+              const { content: parsedContent, data } = matter(module.body);
+              content = parsedContent;
+              frontmatter = data || module.attributes || {};
+            } else if (module.default) {
+              // Content in default property (common in mdx)
+              const { content: parsedContent, data } = matter(module.default);
+              content = parsedContent;
+              frontmatter = data;
+            } else if (module.attributes) {
+              // Handle case where frontmatter is in attributes but content might be elsewhere
+              frontmatter = module.attributes;
+              if (module.html) {
+                content = module.html;
+              } else if (module.content) {
+                content = module.content;
+              } else {
+                content = ''; // Empty content
+              }
+            }
+            
+            // Serialize content for MDX
+            let mdxSource;
+            try {
+              mdxSource = await serialize(content);
+            } catch (error) {
+              console.error(`Error serializing content for ${slug}:`, error);
+              mdxSource = { compiledSource: '' };
+            }
+            
             return {
               slug,
-              title: module.attributes.title,
-              date: module.attributes.date,
-              readTime: module.attributes.readTime,
-              imageUrl: module.attributes.imageUrl,
-              excerpt: module.attributes.excerpt,
+              title: frontmatter.title || module.attributes?.title || 'Untitled',
+              date: frontmatter.date || module.attributes?.date || new Date().toDateString(),
+              readTime: frontmatter.readTime || module.attributes?.readTime || '5 min read',
+              imageUrl: frontmatter.imageUrl || module.attributes?.imageUrl || 'https://via.placeholder.com/800x400',
+              excerpt: frontmatter.excerpt || module.attributes?.excerpt || 'No excerpt available',
               content: mdxSource,
-              tags: module.attributes.tags,
-              featured: module.attributes.featured
+              tags: frontmatter.tags || module.attributes?.tags || [],
+              featured: frontmatter.featured || module.attributes?.featured || false
             };
           } catch (error) {
             console.error(`Error processing blog post ${slug}:`, error);
             return {
               slug,
-              title: module.attributes.title || 'Untitled',
-              date: module.attributes.date || new Date().toDateString(),
-              readTime: module.attributes.readTime || '5 min read',
-              imageUrl: module.attributes.imageUrl || 'https://via.placeholder.com/800x400',
-              excerpt: module.attributes.excerpt || 'No excerpt available',
-              content: "Error processing content",
-              tags: module.attributes.tags || [],
-              featured: module.attributes.featured || false
+              title: module.attributes?.title || 'Untitled',
+              date: module.attributes?.date || new Date().toDateString(),
+              readTime: module.attributes?.readTime || '5 min read',
+              imageUrl: module.attributes?.imageUrl || 'https://via.placeholder.com/800x400',
+              excerpt: module.attributes?.excerpt || 'No excerpt available',
+              content: { compiledSource: 'Error processing content' },
+              tags: module.attributes?.tags || [],
+              featured: module.attributes?.featured || false
             };
           }
         }
@@ -175,43 +241,77 @@ async function initialize() {
     
     allBlogPosts = blogPosts.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
     
-    // Process case studies
+    // Process case studies using the same robust approach as blog posts
     let caseStudies: CaseStudy[] = [];
     if (Object.keys(caseStudyModules).length > 0) {
       caseStudies = await processMarkdownFiles<CaseStudy>(
         caseStudyModules,
-        (path) => path.match(/\/([^\/]+)\.md$/)?.[1] ?? '',
+        (path) => path.split('/').pop()?.replace('.md', '') || '',
         async (slug, module, index) => {
           try {
-            const { content, data } = matter(module.body);
-            const mdxSource = await serialize(content);
+            // Handle different module formats
+            let content = '';
+            let frontmatter: any = {};
+            
+            if (typeof module === 'string') {
+              const { content: parsedContent, data } = matter(module);
+              content = parsedContent;
+              frontmatter = data;
+            } else if (module.body) {
+              const { content: parsedContent, data } = matter(module.body);
+              content = parsedContent;
+              frontmatter = data || module.attributes || {};
+            } else if (module.default) {
+              const { content: parsedContent, data } = matter(module.default);
+              content = parsedContent;
+              frontmatter = data;
+            } else if (module.attributes) {
+              frontmatter = module.attributes;
+              if (module.html) {
+                content = module.html;
+              } else if (module.content) {
+                content = module.content;
+              } else {
+                content = '';
+              }
+            }
+            
+            // Serialize content for MDX
+            let mdxSource;
+            try {
+              mdxSource = await serialize(content);
+            } catch (error) {
+              console.error(`Error serializing content for ${slug}:`, error);
+              mdxSource = { compiledSource: '' };
+            }
+            
             return {
               id: index !== undefined ? index + 1 : 0,
-              title: module.attributes.title,
-              description: module.attributes.description || '',
-              image: module.attributes.image || '',
-              tags: module.attributes.tags || [],
-              category: module.attributes.category || '',
+              title: frontmatter.title || module.attributes?.title || 'Untitled Project',
+              description: frontmatter.description || module.attributes?.description || 'No description available',
+              image: frontmatter.image || module.attributes?.image || 'https://via.placeholder.com/800x400',
+              tags: frontmatter.tags || module.attributes?.tags || ['Sample'],
+              category: frontmatter.category || module.attributes?.category || 'General',
               slug,
-              github: module.attributes.github,
-              liveDemo: module.attributes.liveDemo,
+              github: frontmatter.github || module.attributes?.github,
+              liveDemo: frontmatter.liveDemo || module.attributes?.liveDemo,
               content: mdxSource,
-              featured: module.attributes.featured
+              featured: frontmatter.featured || module.attributes?.featured || false
             };
           } catch (error) {
             console.error(`Error processing case study ${slug}:`, error);
             return {
               id: index !== undefined ? index + 1 : 0,
-              title: module.attributes.title || 'Untitled Project',
-              description: module.attributes.description || 'No description available',
-              image: module.attributes.image || 'https://via.placeholder.com/800x400',
-              tags: module.attributes.tags || ['Sample'],
-              category: module.attributes.category || 'General',
+              title: module.attributes?.title || 'Untitled Project',
+              description: module.attributes?.description || 'No description available',
+              image: module.attributes?.image || 'https://via.placeholder.com/800x400',
+              tags: module.attributes?.tags || ['Sample'],
+              category: module.attributes?.category || 'General',
               slug,
-              github: module.attributes.github,
-              liveDemo: module.attributes.liveDemo,
-              content: "Error processing content",
-              featured: module.attributes.featured || false
+              github: module.attributes?.github,
+              liveDemo: module.attributes?.liveDemo,
+              content: { compiledSource: 'Error processing content' },
+              featured: module.attributes?.featured || false
             };
           }
         }

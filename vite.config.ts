@@ -4,7 +4,6 @@ import path from "path";
 import { nodePolyfills } from 'vite-plugin-node-polyfills';
 import mdx from '@mdx-js/rollup';
 import remarkGfm from 'remark-gfm';
-import { viteStaticCopy } from 'vite-plugin-static-copy';
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -27,14 +26,6 @@ export default defineConfig({
       providerImportSource: '@mdx-js/react',
       remarkPlugins: [remarkGfm],
     }),
-    viteStaticCopy({
-      targets: [
-        {
-          src: 'src/posts',
-          dest: '',
-        },
-      ],
-    }),
   ],
   resolve: {
     alias: {
@@ -49,6 +40,8 @@ export default defineConfig({
     outDir: 'dist',
     assetsDir: 'assets',
     sourcemap: true,
+    // Explicitly copy posts directory to the build output
+    copyPublicDir: true,
     rollupOptions: {
       input: {
         main: path.resolve(__dirname, 'index.html')
