@@ -1,11 +1,16 @@
 ---
-slug: "understanding-big-data-analytics"
-title: "Understanding Big Data Analytics"
-date: "2023-10-05"
-readTime: "8 min read"
-imageUrl: "/images/blog/big-data.jpg"
-excerpt: "Dive into the world of Big Data Analytics, exploring its importance, challenges, and the technologies driving insights from massive datasets."
-tags: ["Big Data", "Data Analytics", "Hadoop", "Spark"]
+title: Understanding Big Data Analytics
+readTime: 8 min read
+excerpt: Dive into the world of Big Data Analytics, exploring its importance,
+  challenges, and the technologies driving insights from massive datasets.
+slug: understanding-big-data-analytics
+date: 2023-10-05
+imageUrl: /images/a0debcc3520bb5b0e88e36f7ca4dd3fa.jpg
+tags:
+  - Big Data
+  - Data Analytics
+  - Hadoop
+  - Spark
 featured: false
 ---
 
