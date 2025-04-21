@@ -40,6 +40,7 @@ interface MarkdownModule {
     liveDemo?: string;
   };
   html: string;
+  body: string;
 }
 
 // Use Vite's import.meta.glob to import all markdown files
@@ -67,7 +68,7 @@ const allBlogPosts: BlogPost[] = processMarkdownFiles<BlogPost>(
     readTime: module.attributes.readTime,
     imageUrl: module.attributes.imageUrl,
     excerpt: module.attributes.excerpt,
-    content: module.html,
+    content: module.body,
     tags: module.attributes.tags,
     featured: module.attributes.featured
   })
@@ -86,7 +87,7 @@ const allCaseStudies: CaseStudy[] = processMarkdownFiles<CaseStudy>(
     slug,
     github: module.attributes.github,
     liveDemo: module.attributes.liveDemo,
-    content: module.html,
+    content: module.body,
     featured: module.attributes.featured
   })
 );
