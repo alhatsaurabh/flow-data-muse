@@ -5,8 +5,8 @@ import { Link } from 'react-router-dom';
 import PageTransition from '@/components/PageTransition';
 import { Badge } from '@/components/ui/badge';
 import { getBlogPostBySlug } from '@/lib/markdown';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
+import { MDXProvider } from '@mdx-js/react';
+import { MDXRemote } from 'next-mdx-remote';
 
 const components = {
   h1: ({ children }: { children: React.ReactNode }) => (
@@ -107,9 +107,9 @@ const BlogPost = () => {
           </div>
 
           <div className="prose prose-lg dark:prose-invert max-w-none">
-            <ReactMarkdown remarkPlugins={[remarkGfm]} components={components}>
-              {post.content}
-            </ReactMarkdown>
+            <MDXProvider components={components}>
+              <MDXRemote {...post.content} />
+            </MDXProvider>
           </div>
         </div>
       </article>

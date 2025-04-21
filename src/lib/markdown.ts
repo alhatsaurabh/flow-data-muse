@@ -1,3 +1,6 @@
+import { serialize } from 'next-mdx-remote/serialize';
+import matter from 'gray-matter';
+
 export interface BlogPost {
   slug: string;
   title: string;
@@ -5,7 +8,7 @@ export interface BlogPost {
   readTime: string;
   imageUrl: string;
   excerpt: string;
-  content: string;
+  content: any;
   tags?: string[];
   featured?: boolean;
 }
@@ -20,7 +23,7 @@ export interface CaseStudy {
   slug: string;
   github?: string;
   liveDemo?: string;
-  content: string;
+  content: any;
   featured?: boolean;
 }
 
@@ -39,7 +42,6 @@ interface MarkdownModule {
     github?: string;
     liveDemo?: string;
   };
-  html: string;
   body: string;
 }
 
@@ -47,49 +49,60 @@ interface MarkdownModule {
 const blogPostModules = import.meta.glob<MarkdownModule>('/src/posts/blog/*.md', { eager: true });
 const caseStudyModules = import.meta.glob<MarkdownModule>('/src/posts/case-studies/*.md', { eager: true });
 
-const processMarkdownFiles = <T>(
+const processMarkdownFiles = async <T>(
   modules: Record<string, MarkdownModule>,
   extractSlug: (path: string) => string,
-  processData: (slug: string, module: MarkdownModule, index?: number) => T
-): T[] => {
-  return Object.entries(modules).map(([path, module], index) => {
-    const slug = extractSlug(path);
-    return processData(slug, module, index);
-  });
+  processData: (slug: string, module: MarkdownModule, index?: number) => Promise<T>
+): Promise<T[]> => {
+  const results = await Promise.all(
+    Object.entries(modules).map(async ([path, module], index) => {
+      const slug = extractSlug(path);
+      return processData(slug, module, index);
+    })
+  );
+  return results;
 };
 
-const allBlogPosts: BlogPost[] = processMarkdownFiles<BlogPost>(
+const allBlogPosts: BlogPost[] = await processMarkdownFiles<BlogPost>(
   blogPostModules,
   (path) => path.match(/\/src\/posts\/blog\/(.*)\.md$/)?.[1] ?? '',
-  (slug, module) => ({
-    slug,
-    title: module.attributes.title,
-    date: module.attributes.date,
-    readTime: module.attributes.readTime,
-    imageUrl: module.attributes.imageUrl,
-    excerpt: module.attributes.excerpt,
-    content: module.body,
-    tags: module.attributes.tags,
-    featured: module.attributes.featured
-  })
-).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  async (slug, module) => {
+    const { content, data } = matter(module.body);
+    const mdxSource = await serialize(content);
+    return {
+      slug,
+      title: module.attributes.title,
+      date: module.attributes.date,
+      readTime: module.attributes.readTime,
+      imageUrl: module.attributes.imageUrl,
+      excerpt: module.attributes.excerpt,
+      content: mdxSource,
+      tags: module.attributes.tags,
+      featured: module.attributes.featured
+    };
+  }
+).then(posts => posts.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()));
 
-const allCaseStudies: CaseStudy[] = processMarkdownFiles<CaseStudy>(
+const allCaseStudies: CaseStudy[] = await processMarkdownFiles<CaseStudy>(
   caseStudyModules,
   (path) => path.match(/\/src\/posts\/case-studies\/(.*)\.md$/)?.[1] ?? '',
-  (slug, module, index) => ({
-    id: index !== undefined ? index + 1 : 0,
-    title: module.attributes.title,
-    description: module.attributes.description || '',
-    image: module.attributes.image || '',
-    tags: module.attributes.tags || [],
-    category: module.attributes.category || '',
-    slug,
-    github: module.attributes.github,
-    liveDemo: module.attributes.liveDemo,
-    content: module.body,
-    featured: module.attributes.featured
-  })
+  async (slug, module, index) => {
+    const { content, data } = matter(module.body);
+    const mdxSource = await serialize(content);
+    return {
+      id: index !== undefined ? index + 1 : 0,
+      title: module.attributes.title,
+      description: module.attributes.description || '',
+      image: module.attributes.image || '',
+      tags: module.attributes.tags || [],
+      category: module.attributes.category || '',
+      slug,
+      github: module.attributes.github,
+      liveDemo: module.attributes.liveDemo,
+      content: mdxSource,
+      featured: module.attributes.featured
+    };
+  }
 );
 
 export const getBlogPosts = (): BlogPost[] => {

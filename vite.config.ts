@@ -2,7 +2,8 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import path from "path";
 import { nodePolyfills } from 'vite-plugin-node-polyfills';
-import { plugin as markdown } from 'vite-plugin-markdown';
+import mdx from '@mdx-js/rollup';
+import remarkGfm from 'remark-gfm';
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -21,7 +22,10 @@ export default defineConfig({
   plugins: [
     react(),
     nodePolyfills(),
-    markdown()
+    mdx({
+      providerImportSource: '@mdx-js/react',
+      remarkPlugins: [remarkGfm],
+    })
   ],
   resolve: {
     alias: {
