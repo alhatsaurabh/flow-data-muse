@@ -4,6 +4,7 @@ import path from "path";
 import { nodePolyfills } from 'vite-plugin-node-polyfills';
 import mdx from '@mdx-js/rollup';
 import remarkGfm from 'remark-gfm';
+import { viteStaticCopy } from 'vite-plugin-static-copy';
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -25,7 +26,15 @@ export default defineConfig({
     mdx({
       providerImportSource: '@mdx-js/react',
       remarkPlugins: [remarkGfm],
-    })
+    }),
+    viteStaticCopy({
+      targets: [
+        {
+          src: 'src/posts',
+          dest: '',
+        },
+      ],
+    }),
   ],
   resolve: {
     alias: {
