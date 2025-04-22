@@ -81,8 +81,9 @@ const Blog = () => {
     fetchPosts();
   }, []);
 
-  const featuredPosts = allPosts.filter(post => post.featured);
-  const otherPosts = allPosts.filter(post => !post.featured);
+  const hasRealPosts = allPosts.length > 1 || (allPosts.length === 1 && allPosts[0].slug !== 'sample-blog-post');
+  const featuredPosts = hasRealPosts ? allPosts.filter(post => post.featured) : [];
+  const otherPosts = hasRealPosts ? allPosts.filter(post => !post.featured) : [];
 
   // Apply search filter to BOTH featured and other posts now that search is global
   const filterPosts = (posts: BlogPost[]) => {

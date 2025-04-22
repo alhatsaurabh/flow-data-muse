@@ -6,7 +6,7 @@ import PageTransition from '@/components/PageTransition';
 import { Badge } from '@/components/ui/badge';
 import { getBlogPostBySlug } from '@/lib/markdown';
 import { MDXProvider } from '@mdx-js/react';
-import { MDXRemote } from 'next-mdx-remote';
+// import { MDXRemote } from 'next-mdx-remote'; // Removed next-mdx-remote
 import { useEffect, useState } from 'react';
 import { BlogPost as BlogPostType } from '@/lib/markdown';
 
@@ -147,7 +147,8 @@ const BlogPost = () => {
 
           <div className="prose prose-lg dark:prose-invert max-w-none">
             <MDXProvider components={components}>
-              <MDXRemote {...post.content} />
+              {/* Render the MDX component directly */}
+              {post.content && <post.content />}
             </MDXProvider>
           </div>
         </div>

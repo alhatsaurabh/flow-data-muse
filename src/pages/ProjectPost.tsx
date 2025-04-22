@@ -6,7 +6,7 @@ import PageTransition from '@/components/PageTransition';
 import { Badge } from '@/components/ui/badge';
 import { getCaseStudyBySlug, CaseStudy } from '@/lib/markdown';
 import { MDXProvider } from '@mdx-js/react';
-import { MDXRemote } from 'next-mdx-remote';
+// import { MDXRemote } from 'next-mdx-remote'; // Removed next-mdx-remote
 import { useEffect, useState } from 'react';
 
 const components = {
@@ -144,7 +144,8 @@ const ProjectPost = () => {
           <div className="prose prose-lg dark:prose-invert max-w-none mb-8">
             <p className="text-xl text-muted-foreground mb-6">{project.description}</p>
             <MDXProvider components={components}>
-              <MDXRemote {...project.content} />
+              {/* Render the MDX component directly */}
+              {project.content && <project.content />}
             </MDXProvider>
           </div>
 

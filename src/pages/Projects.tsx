@@ -27,7 +27,7 @@ const ProjectCard = ({
     <Card className="flex flex-col h-full border overflow-hidden group">
       <div className="relative h-52 overflow-hidden">
         <img
-          src={project.image}
+          src={project.image.startsWith('http') ? project.image : `/images/${project.image}`}
           alt={project.title}
           className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-105"
         />
@@ -88,7 +88,7 @@ const ProjectCard = ({
 );
 
 const Projects = () => {
-  const [selectedCategory, setSelectedCategory] = useState<string>('All');
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [projects, setProjects] = useState<CaseStudy[]>([]);
