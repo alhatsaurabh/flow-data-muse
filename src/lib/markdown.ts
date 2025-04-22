@@ -88,26 +88,9 @@ let caseStudyModules: Record<string, MarkdownModule> = {};
 
 function initializeModules() {
   try {
-    // Make path patterns more flexible to find markdown files in the build
-    blogPostModules = import.meta.glob<MarkdownModule>([
-      '/src/posts/blog/*.md', 
-      'src/posts/blog/*.md',
-      '/public/posts/blog/*.md',
-      'public/posts/blog/*.md',
-      '/posts/blog/*.md',
-      './posts/blog/*.md',
-      'posts/blog/*.md'
-    ], { eager: true });
+    blogPostModules = import.meta.glob<MarkdownModule>('/src/posts/blog/*.md', { eager: true });
     
-    caseStudyModules = import.meta.glob<MarkdownModule>([
-      '/src/posts/case-studies/*.md',
-      'src/posts/case-studies/*.md',
-      '/public/posts/case-studies/*.md',
-      'public/posts/case-studies/*.md',
-      '/posts/case-studies/*.md',
-      './posts/case-studies/*.md',
-      'posts/case-studies/*.md'
-    ], { eager: true });
+    caseStudyModules = import.meta.glob<MarkdownModule>('/src/posts/case-studies/*.md', { eager: true });
     
     // Add debug logging
     console.log('Blog post modules available:', Object.keys(blogPostModules).length);
