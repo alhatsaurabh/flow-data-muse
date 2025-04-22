@@ -88,30 +88,28 @@ let caseStudyModules: Record<string, MarkdownModule> = {};
 
 function initializeModules() {
   try {
-    // Make path patterns more flexible to find markdown files in the build
+    // Ensure all glob patterns start with '/' or './'
     blogPostModules = import.meta.glob<MarkdownModule>([
-      '/src/posts/blog/*.md', 
-      'src/posts/blog/*.md',
+      '/src/posts/blog/*.md',
       '/public/posts/blog/*.md',
-      'public/posts/blog/*.md',
       '/posts/blog/*.md',
       './posts/blog/*.md',
-      'posts/blog/*.md'
+      // Remove patterns not starting with '/' or './'
     ], { eager: true });
     
     caseStudyModules = import.meta.glob<MarkdownModule>([
       '/src/posts/case-studies/*.md',
-      'src/posts/case-studies/*.md',
       '/public/posts/case-studies/*.md',
-      'public/posts/case-studies/*.md',
       '/posts/case-studies/*.md',
       './posts/case-studies/*.md',
-      'posts/case-studies/*.md'
+      // Remove patterns not starting with '/' or './'
     ], { eager: true });
     
     // Add debug logging
     console.log('Blog post modules available:', Object.keys(blogPostModules).length);
     console.log('Case study modules available:', Object.keys(caseStudyModules).length);
+    
+    // Log the keys to check the paths
     console.log('Blog post modules paths:', Object.keys(blogPostModules));
     console.log('Case study modules paths:', Object.keys(caseStudyModules));
   } catch (error) {
