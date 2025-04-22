@@ -13,6 +13,10 @@ category: machine-learning
 liveDemo: https://example.com/segmentation-demo
 featured: false
 ---
+
+
+![](/images/bde5a3c21f2892aaeba3687bb4c18ab1.jpg)
+
 !!t﻿his is the customer segmentation content thatneeds to be displayed!!!!!!
 
 1﻿2312312
