@@ -7,7 +7,7 @@ excerpt: This is a sample blog post to test the markdown processing functionalit
 tags:
   - sample
   - test
-featured: true
+featured: false
 ---
 
 # Sample Blog Post
