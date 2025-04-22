@@ -11,7 +11,7 @@ tags:
   - Tableau
 category: machine-learning
 liveDemo: https://example.com/segmentation-demo
-featured: true
+featured: false
 ---
 !!t﻿his is the customer segmentation content thatneeds to be displayed!!!!!!
 
