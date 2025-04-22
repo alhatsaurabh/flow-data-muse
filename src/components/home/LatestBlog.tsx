@@ -29,7 +29,7 @@ const LatestBlog = () => {
   }, []);
 
   return (
-    <section className="bg-muted/50 py-24">
+    <section id="latest-insights-section" className="bg-muted/50 py-24">
       <div className="container px-4 md:px-6">
         <div className="flex flex-col md:flex-row md:items-center justify-between mb-12 gap-4">
           <div>

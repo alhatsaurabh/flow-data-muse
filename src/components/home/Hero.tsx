@@ -10,7 +10,8 @@ const Hero = () => {
     const nextSection = document.getElementById('featured-section');
     if (nextSection) {
       nextSection.scrollIntoView({
-        behavior: 'smooth'
+        behavior: 'smooth',
+        block: 'center', // Center the target element
       });
     }
   };
@@ -153,7 +154,7 @@ const Hero = () => {
         
         <motion.button 
           onClick={scrollToNextSection}
-          className="animate-bounce p-2 rounded-full border mt-8"
+          className="animate-bounce p-2 rounded-full border mt-8 shadow-md"
           aria-label="Scroll down"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}

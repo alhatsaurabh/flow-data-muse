@@ -1,4 +1,4 @@
-import { ArrowRight, ExternalLink, Github } from 'lucide-react';
+import { ArrowRight, ExternalLink, Github, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -158,6 +158,18 @@ const FeaturedProjects = () => {
             </motion.div>
           ))}
         </motion.div>
+      </div>
+      <div className="container px-4 md:px-6 flex justify-center mt-12">
+        <motion.button
+          onClick={() => document.getElementById('skills-section')?.scrollIntoView({ behavior: 'smooth' })}
+          className="animate-bounce p-2 rounded-full border mt-8 shadow-md"
+          aria-label="Scroll down to Skills"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5, delay: 1 }}
+        >
+          <ChevronDown className="h-5 w-5 text-muted-foreground" />
+        </motion.button>
       </div>
     </section>
   );

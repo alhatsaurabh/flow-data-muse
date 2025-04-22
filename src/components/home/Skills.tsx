@@ -1,7 +1,8 @@
-
+import { ChevronDown } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { BarChart3, Database, LineChart, PieChart, TrendingUp, UsersRound } from 'lucide-react';
 import { motion } from 'framer-motion';
+import React from 'react'; // Import React
 
 const Skills = () => {
   const skillSets = [
@@ -83,7 +84,7 @@ const Skills = () => {
   };
 
   return (
-    <section className="py-24">
+    <section id="skills-section" className="py-24">
       <div className="container px-4 md:px-6">
         <div className="text-center mb-16">
           <h2 className="text-3xl font-bold tracking-tight mb-3">Technical Expertise</h2>
@@ -135,6 +136,18 @@ const Skills = () => {
             </motion.div>
           ))}
         </motion.div>
+      </div>
+      <div className="container px-4 md:px-6 flex justify-center mt-12">
+        <motion.button
+          onClick={() => document.getElementById('latest-insights-section')?.scrollIntoView({ behavior: 'smooth', block: 'center' })}
+          className="animate-bounce p-2 rounded-full border mt-8 shadow-md"
+          aria-label="Scroll down to Latest Insights"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5, delay: 1 }}
+        >
+          <ChevronDown className="h-5 w-5 text-muted-foreground" />
+        </motion.button>
       </div>
     </section>
   );
