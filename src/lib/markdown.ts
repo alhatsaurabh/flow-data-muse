@@ -88,15 +88,11 @@ let caseStudyModules: Record<string, MarkdownModule> = {};
 
 function initializeModules() {
   try {
-    blogPostModules = import.meta.glob<MarkdownModule>([
-      './src/posts/blog/*.md',
-      './public/src/posts/blog/*.md'
-    ], { eager: true });
-    
-    caseStudyModules = import.meta.glob<MarkdownModule>([
-      './src/posts/case-studies/*.md',
-      './public/src/posts/case-studies/*.md'
-    ], { eager: true });
+    blogPostModules = import.meta.glob<MarkdownModule>(['./dist/src/posts/blog/*.md'], { eager: true });
+
+    caseStudyModules = import.meta.glob<MarkdownModule>(['./dist/src/posts/case-studies/*.md'], { eager: true });
+
+
     
     // Add debug logging
     console.log('Blog post modules available:', Object.keys(blogPostModules).length);
