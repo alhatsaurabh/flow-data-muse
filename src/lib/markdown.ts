@@ -88,15 +88,12 @@ let caseStudyModules: Record<string, MarkdownModule> = {};
 
 function initializeModules() {
   try {
-    blogPostModules = import.meta.glob<MarkdownModule>('/src/posts/blog/*.md', { eager: true });
-    
-    caseStudyModules = import.meta.glob<MarkdownModule>('/src/posts/case-studies/*.md', { eager: true });
+    blogPostModules = import.meta.glob<MarkdownModule>('./src/posts/blog/*.md', { eager: true });
+    caseStudyModules = import.meta.glob<MarkdownModule>('./src/posts/case-studies/*.md', { eager: true });
     
     // Add debug logging
     console.log('Blog post modules available:', Object.keys(blogPostModules).length);
     console.log('Case study modules available:', Object.keys(caseStudyModules).length);
-    console.log('Blog post modules paths:', Object.keys(blogPostModules));
-    console.log('Case study modules paths:', Object.keys(caseStudyModules));
   } catch (error) {
     console.error('Error initializing modules:', error);
     // Leave the modules as empty objects
