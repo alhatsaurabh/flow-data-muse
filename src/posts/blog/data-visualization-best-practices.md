@@ -1,10 +1,14 @@
 ---
 title: "Data Visualization: Best Practices for Effective Communication"
-date: "2024-03-20"
-readTime: "6 min read"
-imageUrl: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=2070"
-excerpt: "Discover the essential principles of effective data visualization to communicate insights clearly and persuasively."
-tags: ["Data Visualization", "Communication", "Best Practices"]
+date: 2024-03-20
+readTime: 6 min read
+imageUrl: /images/representation-user-experience-interface-design_23-2150169851.webp
+excerpt: Discover the essential principles of effective data visualization to
+  communicate insights clearly and persuasively.
+tags:
+  - Data Visualization
+  - Communication
+  - Best Practices
 featured: true
 ---
 
