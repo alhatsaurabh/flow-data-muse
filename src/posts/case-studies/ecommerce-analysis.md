@@ -1,16 +1,17 @@
 ---
+github: https://github.com/alhatsaurabh/ecommerce-analysis
+slug: ecommerce-analysis
 title: E-commerce Sales Analysis
-description: Analyzed 3 years of sales data to identify trends and optimize inventory management, resulting in a 15% increase in revenue.
+description: Analyzed 3 years of sales data to identify trends and optimize
+  inventory management, resulting in a 15% increase in revenue.
 image: /images/projects/ecommerce-analysis.png
 tags:
   - Python
   - Tableau
   - SQL
 category: business-intelligence
-slug: ecommerce-analysis
-github: https://github.com/alhatsaurabh/ecommerce-analysis
 liveDemo: https://example.com/ecommerce-demo
-featured: true
+featured: false
 ---
 
 ## Project Overview
