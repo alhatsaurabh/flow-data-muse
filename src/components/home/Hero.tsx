@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { motion } from 'framer-motion';
+import { useEffect } from 'react';
 
 const Hero = () => {
   const scrollToNextSection = () => {
@@ -151,8 +152,8 @@ const Hero = () => {
         </motion.div>
         
         <motion.button 
-          onClick={scrollToNextSection} 
-          className="animate-bounce p-2 rounded-full border mt-8" 
+          onClick={scrollToNextSection}
+          className="animate-bounce p-2 rounded-full border mt-8"
           aria-label="Scroll down"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}

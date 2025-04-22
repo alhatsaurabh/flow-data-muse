@@ -64,7 +64,13 @@ const FeaturedProjects = () => {
   }
 
   if (featuredCaseStudies.length === 0) {
-    return null;
+    return (
+      <section id="featured-section" className="py-24">
+        <div className="container px-4 md:px-6">
+          <p className="text-muted-foreground">No featured projects found.</p>
+        </div>
+      </section>
+    );
   }
 
   return (

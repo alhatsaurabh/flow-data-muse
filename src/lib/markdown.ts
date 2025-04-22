@@ -230,14 +230,14 @@ async function initialize() {
               id: index !== undefined ? index + 1 : 0,
               title: otherFrontmatter.title,
               description: otherFrontmatter.description || 'No description available',
-              image: 'https://via.placeholder.com/800x400',
-              tags: ['Sample'],
-              category: 'General',
+              image: otherFrontmatter.image || 'https://via.placeholder.com/800x400',
+              tags: otherFrontmatter.tags || ['Sample'],
+              category: otherFrontmatter.category || 'General',
               slug,
-              github: undefined,
-              liveDemo: undefined,
+              github: otherFrontmatter.github,
+              liveDemo: otherFrontmatter.liveDemo,
               content: ContentComponent,
-              featured: false
+              featured: otherFrontmatter.featured === true || otherFrontmatter.featured === 'true'
             };
           } catch (error) {
             console.error(`Error processing case study ${slug}:`, error);
@@ -283,8 +283,8 @@ export async function getCaseStudies(): Promise<CaseStudy[]> {
 
 export async function getFeaturedBlogPosts(): Promise<BlogPost[]> {
   if (!initialized) await initialize();
-  const featured = allBlogPosts.filter(post => post.featured && post.slug !== 'sample-blog-post'); // Filter out sample post
-  return featured.length > 0 ? featured : []; // Return empty array if no featured posts
+  const featured = allBlogPosts.filter(post => post.featured && post.slug !== 'sample-blog-post');
+  return featured.length > 0 ? featured : [];
 }
 
 export async function getBlogPostBySlug(slug: string): Promise<BlogPost | undefined> {
