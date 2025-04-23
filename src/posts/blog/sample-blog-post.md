@@ -8,6 +8,7 @@ tags:
   - sample
   - test
 featured: false
+draft: true
 ---
 
 # Sample Blog Post
