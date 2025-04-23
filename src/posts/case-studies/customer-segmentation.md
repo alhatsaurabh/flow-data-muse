@@ -1,21 +1,20 @@
 ---
-github: https://github.com/alhatsaurabh/customer-segmentation
-slug: customer-segmentation
 title: Customer Segmentation
 description: Developed customer segments based on purchasing behavior, enabling
   targeted marketing strategies.
-image: /images/representation-user-experience-interface-design_23-2150169851.webp
+image: /images/1000_f_914296072_xintj9txiawotzeszjysg8ibecwtdtjd.jpg
 tags:
   - Python
   - Clustering
   - Tableau
 category: machine-learning
+github: https://github.com/alhatsaurabh/customer-segmentation
 liveDemo: https://example.com/segmentation-demo
 featured: false
+draft: false
+slug: customer-segmentation
 ---
-
-
-![](/images/bde5a3c21f2892aaeba3687bb4c18ab1.jpg)
+![]()
 
 !!t﻿his is the customer segmentation content thatneeds to be displayed!!!!!!
 
