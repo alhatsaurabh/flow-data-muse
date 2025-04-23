@@ -2,7 +2,7 @@
 title: "📈 Data Storytelling: How to Make Your Numbers Speak Human"
 date: 2024-03-15
 readTime: 5 min read
-imageUrl: https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=2070
+imageUrl: /images/premium_photo-1731860728905-78e6391d387c.avif
 excerpt: Learn how data-driven decision making can transform your business
   operations and drive growth.
 tags:
