@@ -46,38 +46,38 @@ const About = () => {
   }];
   
   const experiences = [{
-    role: 'Senior Data Analyst',
-    company: 'Global Tech Solutions',
-    period: '2022 - Present',
-    description: 'Leading data analysis projects for Fortune 500 clients, implementing automated reporting solutions, and developing predictive models.'
+    role: 'Working Student Data Analyst',
+    company: 'Netzorange IT -Dienstleistungen GmbH & Co. KG',
+    period: '2024 - Present',
+    description: 'Helped turn messy data into clear insights for smarter business decisions.'
   }, {
-    role: 'Data Analyst',
-    company: 'Marketing Analytics Inc.',
+    role: 'Jr. Data Analyst',
+    company: 'M Global Design Estate',
     period: '2019 - 2022',
-    description: 'Analyzed marketing campaign performance, customer behavior patterns, and market trends to optimize strategies and increase ROI.'
+    description: 'Supported surveys and turned responses into visuals and reports clients could actually use.'
   }, {
-    role: 'Junior Analyst',
-    company: 'Data Insights Co.',
-    period: '2017 - 2019',
-    description: 'Supported data collection, cleaning, and preliminary analysis for various business units. Created regular reports and dashboards.'
+    role: 'Machine Learning Intern',
+    company: ' Code Karo Yaaro',
+    period: '2018',
+    description: 'Improved a chatbot and cleaned data to make things work faster and better.'
   }];
   
   const education = [{
-    degree: 'Master of Science in Data Science',
-    institution: 'University of Data Analytics',
-    year: '2016 - 2017'
+    degree: 'Master of Business Administration',
+    institution: 'Arden University, Germany',
+    year: '2023 - 2024'
   }, {
-    degree: 'Bachelor of Science in Statistics',
-    institution: 'State University',
-    year: '2012 - 2016'
+    degree: 'Bachelor of Science (BSc), Information Technology',
+    institution: 'Pillai College of Arts, Commerce, and Science, India',
+    year: '2019 - 2022'
   }];
   
   const certifications = [
+    'Coming soon : ',
     'Google Data Analytics Professional Certificate', 
     'Microsoft Certified: Data Analyst Associate', 
     'Tableau Desktop Specialist', 
     'IBM Data Science Professional Certificate', 
-    'Python for Data Science and Machine Learning Bootcamp'
   ];
 
   return (
@@ -94,7 +94,9 @@ const About = () => {
                 With a background in statistics and data science, I specialize in uncovering patterns in data that drive business growth and operational efficiency. I believe that good data analysis is as much about asking the right questions as it is about technical skills.
               </p>
               <Button className="gap-2">
-                <Download className="h-4 w-4" /> Download Resume
+                <a href="/cv.pdf" download>
+                  <Download className="h-4 w-4" /> Download CV
+                </a>
               </Button>
             </div>
             <div className="relative">
