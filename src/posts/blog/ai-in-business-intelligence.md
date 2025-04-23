@@ -1,17 +1,18 @@
 ---
-title: The Role of AI in Business Intelligence
+title: 🤖The Role of AI in Business Intelligence
+date: 2023-10-18
 readTime: 7 min read
+imageUrl: /images/network-forming-ai-robot-face.webp
 excerpt: Explore how Artificial Intelligence is revolutionizing Business
   Intelligence, enabling predictive analytics and smarter decision-making.
-slug: ai-in-business-intelligence
-date: 2023-10-18
-imageUrl: /images/photo-1542744173-05336fcc7ad4.avif
 tags:
   - AI
   - Business Intelligence
   - Analytics
   - Machine Learning
 featured: false
+draft: false
+slug: ai-in-business-intelligence
 ---
 - - -
 
