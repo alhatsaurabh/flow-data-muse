@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import PageTransition from '@/components/PageTransition';
 import { Badge } from '@/components/ui/badge';
-import { getCaseStudyBySlug, CaseStudy } from '@/lib/markdown';
+import { getCaseStudyBySlug, CaseStudy } from '@/lib/markdown.tsx';
 import { MDXProvider } from '@mdx-js/react';
 // import { MDXRemote } from 'next-mdx-remote'; // Removed next-mdx-remote
 import { useEffect, useState } from 'react';

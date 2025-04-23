@@ -20,6 +20,7 @@ collections:
       - { label: "GitHub Link", name: "github", widget: "string", required: false }
       - { label: "Live Demo Link", name: "liveDemo", widget: "string", required: false }
       - { label: "Featured", name: "featured", widget: "boolean", default: false }
+      - { label: "Draft", name: "draft", widget: "boolean", default: false } # Add draft field
       - { label: "Content", name: "body", widget: "markdown" }
 
   - name: "blog"
@@ -35,4 +36,5 @@ collections:
       - { label: "Excerpt", name: "excerpt", widget: "text" }
       - { label: "Tags", name: "tags", widget: "list" }
       - { label: "Featured", name: "featured", widget: "boolean", default: false }
-      - { label: "Content", name: "body", widget: "markdown" } 
+      - { label: "Draft", name: "draft", widget: "boolean", default: false } # Add draft field
+      - { label: "Content", name: "body", widget: "markdown" }

@@ -1,8 +1,14 @@
+/** @jsxImportSource react */
 import matter from 'gray-matter';
 import React from 'react';
 import ReactMarkdown from 'react-markdown'; // Import ReactMarkdown
 import { ComponentType } from 'react';
 import path from 'path';
+
+// Custom component to render images with responsive styling
+const MarkdownImage = ({ alt, src }: { alt?: string; src?: string }) => {
+  return <img src={src} alt={alt} style={{ maxWidth: '100%', height: 'auto' }} />;
+};
 
 export interface BlogPost {
   slug: string;
@@ -14,6 +20,7 @@ export interface BlogPost {
   content: React.ComponentType<any>; // Content is now the MDX component
   tags?: string[];
   featured?: boolean;
+  draft?: boolean; // Add draft property
 }
 
 export interface CaseStudy {
@@ -28,6 +35,7 @@ export interface CaseStudy {
   liveDemo?: string;
   content: React.ComponentType<any>; // Content is now the MDX component
   featured?: boolean;
+  draft?: boolean; // Add draft property
 }
 
 // Sample blog post for testing and fallback
@@ -40,7 +48,8 @@ const sampleBlogPost: BlogPost = {
   excerpt: 'This is a sample blog post to test the markdown processing functionality.',
   content: () => React.createElement('div', null, 'Sample Blog Post Content'), // Provide a dummy component
   tags: ['sample', 'test'],
-  featured: true
+  featured: true,
+  draft: false // Default sample to not be a draft
 };
 
 // Sample case study for testing and fallback
@@ -55,7 +64,8 @@ const sampleCaseStudy: CaseStudy = {
   github: 'https://github.com/example/sample-project',
   liveDemo: 'https://example.com/demo',
   content: () => React.createElement('div', null, 'Sample Case Study Content'), // Provide a dummy component
-  featured: true
+  featured: true,
+  draft: false // Default sample to not be a draft
 };
 
 // State variables
@@ -140,24 +150,28 @@ async function initialize() {
     if (Object.keys(blogPostModules).length > 0) {
       blogPosts = await processMarkdownFiles<BlogPost>(
         blogPostModules,
-        async (slug, module) => {
+        async (slug, rawContent) => {
           try {
-            let frontmatter: any = {};
+            const parsedMarkdown = matter(rawContent);
+            const frontmatter = parsedMarkdown.data;
+            const content = parsedMarkdown.content;
+
             let ContentComponent: React.ComponentType<any> | undefined;
-            let content = '';
 
             if (slug.endsWith('.mdx')) {
-              const mdxModule = await import(new URL(module, import.meta.url).toString());
+               // Dynamically import the MDX file to get the component
+              const mdxModule = await import(/* @vite-ignore */ new URL(path.join('/src/posts/blog', `${slug}.mdx`), import.meta.url).toString());
               ContentComponent = mdxModule.default;
-              frontmatter = mdxModule.attributes;
             } else {
-              // It's a plain .md file, process with gray-matter and react-markdown
-              const parsedMarkdown = matter(module);
-              frontmatter = parsedMarkdown.data;
-              content = parsedMarkdown.content;
-
-              ContentComponent = () => React.createElement(ReactMarkdown, { children: content });
+              // For plain markdown, use ReactMarkdown with custom image component
+              ContentComponent = () => React.createElement(ReactMarkdown, {
+                children: content,
+                components: {
+                  img: MarkdownImage,
+                },
+              });
             }
+
 
             // Basic validation: check for a title and content component
             if (!frontmatter.title || !ContentComponent) {
@@ -165,17 +179,24 @@ async function initialize() {
               return null; // Return null if essential data is missing
             }
 
+            // Calculate read time based on word count (assuming 200 words per minute)
+            const wordCount = content.split(/\s+/).length;
+            const readTimeMinutes = Math.ceil(wordCount / 200);
+            const readTime = `${readTimeMinutes} min read`;
+
+
             const { date, ...otherFrontmatter } = frontmatter; // Destructure date
             return {
               slug,
               title: otherFrontmatter.title,
               date: date ? date.toString() : new Date().toDateString(), // Convert date to string
-              readTime: otherFrontmatter.readTime || '5 min read',
+              readTime: readTime, // Use calculated read time
               imageUrl: otherFrontmatter.imageUrl || 'https://via.placeholder.com/800x400',
               excerpt: otherFrontmatter.excerpt || 'No excerpt available',
               content: ContentComponent,
               tags: otherFrontmatter.tags || [],
-              featured: otherFrontmatter.featured || false
+              featured: otherFrontmatter.featured || false,
+              draft: otherFrontmatter.draft || false // Include draft property
             };
           } catch (error) {
             console.error(`Error processing blog post ${slug}:`, error);
@@ -215,10 +236,15 @@ async function initialize() {
               frontmatter = parsedMarkdown.data;
               content = parsedMarkdown.content;
 
-              ContentComponent = () => React.createElement(ReactMarkdown, { children: content });
-            }
+              ContentComponent = () => React.createElement(ReactMarkdown, {
+               children: content,
+               components: {
+                 img: MarkdownImage,
+               },
+             });
+           }
 
-            // Basic validation: check for a title and content component
+           // Basic validation: check for a title and content component
             if (!frontmatter.title || !ContentComponent) {
               console.warn(`Skipping case study ${slug} due to missing title or content component.`);
               return null; // Return null on error
@@ -237,7 +263,8 @@ async function initialize() {
               github: otherFrontmatter.github,
               liveDemo: otherFrontmatter.liveDemo,
               content: ContentComponent,
-              featured: otherFrontmatter.featured === true || otherFrontmatter.featured === 'true'
+              featured: otherFrontmatter.featured === true || otherFrontmatter.featured === 'true',
+              draft: otherFrontmatter.draft || false // Include draft property
             };
           } catch (error) {
             console.error(`Error processing case study ${slug}:`, error);
@@ -271,30 +298,34 @@ initialize();
 // Export functions that always return at least the sample data
 export async function getBlogPosts(): Promise<BlogPost[]> {
   if (!initialized) await initialize();
+  // Filter out draft posts
+  const publishedBlogPosts = allBlogPosts.filter(post => !post.draft);
   // Ensure we don't return just the sample if there are other posts
-  return allBlogPosts.length > 1 || (allBlogPosts.length === 1 && allBlogPosts[0].slug !== 'sample-blog-post') ? allBlogPosts : [sampleBlogPost];
+  return publishedBlogPosts.length > 0 ? publishedBlogPosts : [sampleBlogPost];
 }
 
 export async function getCaseStudies(): Promise<CaseStudy[]> {
   if (!initialized) await initialize();
+  // Filter out draft case studies
+  const publishedCaseStudies = allCaseStudies.filter(study => !study.draft);
    // Ensure we don't return just the sample if there are other posts
-  return allCaseStudies.length > 1 || (allCaseStudies.length === 1 && allCaseStudies[0].slug !== 'sample-case-study') ? allCaseStudies : [sampleCaseStudy];
+  return publishedCaseStudies.length > 0 ? publishedCaseStudies : [sampleCaseStudy];
 }
 
 export async function getFeaturedBlogPosts(): Promise<BlogPost[]> {
   if (!initialized) await initialize();
-  const featured = allBlogPosts.filter(post => post.featured && post.slug !== 'sample-blog-post');
+  const featured = allBlogPosts.filter(post => post.featured && post.slug !== 'sample-blog-post' && !post.draft); // Filter out drafts
   return featured.length > 0 ? featured : [];
 }
 
 export async function getBlogPostBySlug(slug: string): Promise<BlogPost | undefined> {
   if (!initialized) await initialize();
-  const post = allBlogPosts.find(post => post.slug === slug);
+  const post = allBlogPosts.find(post => post.slug === slug && !post.draft); // Find only published post
   return post || (slug === 'sample-blog-post' ? sampleBlogPost : undefined);
 }
 
 export async function getCaseStudyBySlug(slug: string): Promise<CaseStudy | undefined> {
   if (!initialized) await initialize();
-  const study = allCaseStudies.find(study => study.slug === slug);
+  const study = allCaseStudies.find(study => study.slug === slug && !study.draft); // Find only published study
   return study || (slug === 'sample-case-study' ? sampleCaseStudy : undefined);
 }

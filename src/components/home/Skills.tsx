@@ -139,7 +139,17 @@ const Skills = () => {
       </div>
       <div className="container px-4 md:px-6 flex justify-center mt-12">
         <motion.button
-          onClick={() => document.getElementById('latest-insights-section')?.scrollIntoView({ behavior: 'smooth', block: 'center' })}
+          onClick={() => {
+            const targetElement = document.getElementById('latest-insights-section');
+            if (targetElement) {
+              const offset = 50; // Adjust this value as needed
+              const targetPosition = window.scrollY + targetElement.getBoundingClientRect().top - offset;
+              window.scrollTo({
+                top: targetPosition,
+                behavior: 'smooth',
+              });
+            }
+          }}
           className="animate-bounce p-2 rounded-full border mt-8 shadow-md"
           aria-label="Scroll down to Latest Insights"
           initial={{ opacity: 0 }}

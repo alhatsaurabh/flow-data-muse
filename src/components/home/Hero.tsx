@@ -9,9 +9,11 @@ const Hero = () => {
   const scrollToNextSection = () => {
     const nextSection = document.getElementById('featured-section');
     if (nextSection) {
-      nextSection.scrollIntoView({
+      const offset = 50; // Adjust this value as needed
+      const targetPosition = window.scrollY + nextSection.getBoundingClientRect().top - offset;
+      window.scrollTo({
+        top: targetPosition,
         behavior: 'smooth',
-        block: 'center', // Center the target element
       });
     }
   };
@@ -29,8 +31,8 @@ const Hero = () => {
       {/* Decorative element */}
       <div className="absolute -right-20 top-1/4 w-80 h-80 bg-primary/10 rounded-full blur-3xl -z-10" />
       
-      <div className="container px-4 md:px-6 flex flex-col items-center text-center">
-        <motion.div 
+      <div className="container px-4 md:px-6 flex flex-col items-center text-center relative z-20">
+        <motion.div
           initial={{ scale: 0.9, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.2 }}
