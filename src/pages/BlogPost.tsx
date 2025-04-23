@@ -133,7 +133,7 @@ const BlogPost = () => {
               ))}
             </div>
             <div className="text-muted-foreground">
-              {post.date} · {post.readTime}
+              {post.date.toDateString()} at {post.date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} · {post.readTime}
             </div>
           </header>
 

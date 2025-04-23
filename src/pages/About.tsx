@@ -93,9 +93,9 @@ const About = () => {
               <p className="text-muted-foreground mb-8">
                 With a background in statistics and data science, I specialize in uncovering patterns in data that drive business growth and operational efficiency. I believe that good data analysis is as much about asking the right questions as it is about technical skills.
               </p>
-              <Button className="gap-2">
-                <a href="/cv.pdf" download>
-                  <Download className="h-4 w-4" /> Download CV
+              <Button asChild size="lg" className="gap-2">
+                <a href="/downloads/Saurabh's CV.pdf" download="Saurabh_Alhat_CV.pdf">
+                  Download CV <Download className="h-4 w-4" />
                 </a>
               </Button>
             </div>
