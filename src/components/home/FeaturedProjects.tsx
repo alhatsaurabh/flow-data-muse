@@ -98,63 +98,59 @@ const FeaturedProjects = () => {
         >
           {featuredCaseStudies.map((project) => (
             <motion.div
-              key={project.id}
               variants={item}
               className="h-full"
             >
-              <Card className="overflow-hidden group border h-full flex flex-col">
-                <div className="aspect-video relative overflow-hidden">
-                  <img 
-                    src={project.image} 
-                    alt={project.title}
-                    className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-105"
-                  />
-                  <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-3">
-                    {project.github && (
-                      <a 
-                        href={project.github} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="bg-white/20 p-2 rounded-full hover:bg-white/40 transition-colors"
-                        aria-label="View GitHub Repository"
-                      >
-                        <Github className="h-5 w-5 text-white" />
-                      </a>
-                    )}
-                    {project.liveDemo && (
-                      <a 
-                        href={project.liveDemo} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="bg-white/20 p-2 rounded-full hover:bg-white/40 transition-colors"
-                        aria-label="View Live Demo"
-                      >
-                        <ExternalLink className="h-5 w-5 text-white" />
-                      </a>
-                    )}
+              <Link to={`/projects/${project.slug}`} key={project.id} className="flex flex-col h-full">
+                <Card className="overflow-hidden group border h-full flex flex-col">
+                  <div className="aspect-video relative overflow-hidden">
+                    <img
+                      src={project.image}
+                      alt={project.title}
+                      className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-105"
+                    />
+                    <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-3">
+                      {project.github && (
+                        <a
+                          href={project.github}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="bg-white/20 p-2 rounded-full hover:bg-white/40 transition-colors"
+                          aria-label="View GitHub Repository"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <Github className="h-5 w-5 text-white" />
+                        </a>
+                      )}
+                      {project.liveDemo && (
+                        <a
+                          href={project.liveDemo}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="bg-white/20 p-2 rounded-full hover:bg-white/40 transition-colors"
+                          aria-label="View Live Demo"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <ExternalLink className="h-5 w-5 text-white" />
+                        </a>
+                      )}
+                    </div>
                   </div>
-                </div>
-                <CardHeader>
-                  <CardTitle>{project.title}</CardTitle>
-                  <CardDescription className="line-clamp-2">{project.description}</CardDescription>
-                </CardHeader>
-                <CardContent className="flex-grow">
-                  <div className="flex flex-wrap gap-2">
-                    {project.tags.map((tag) => (
-                      <Badge key={tag} variant="secondary" className="transition-all hover:bg-primary hover:text-primary-foreground">
-                        {tag}
-                      </Badge>
-                    ))}
-                  </div>
-                </CardContent>
-                <CardFooter>
-                  <Button asChild variant="ghost" className="gap-2 w-full justify-center">
-                    <Link to={`/projects/${project.slug}`}>
-                      View Case Study <ArrowRight className="h-4 w-4" />
-                    </Link>
-                  </Button>
-                </CardFooter>
-              </Card>
+                  <CardHeader>
+                    <CardTitle>{project.title}</CardTitle>
+                    <CardDescription className="line-clamp-2">{project.description}</CardDescription>
+                  </CardHeader>
+                  <CardContent className="flex-grow">
+                    <div className="flex flex-wrap gap-2">
+                      {project.tags.map((tag) => (
+                        <Badge key={tag} variant="secondary" className="transition-all hover:bg-primary hover:text-primary-foreground">
+                          {tag}
+                        </Badge>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              </Link>
             </motion.div>
           ))}
         </motion.div>

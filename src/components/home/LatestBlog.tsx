@@ -52,32 +52,25 @@ const LatestBlog = () => {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {posts.map((post) => (
-              <Card key={post.slug} className="flex flex-col h-full border">
-                <CardHeader>
-                  <h3 className="text-xl font-bold">
-                    <Link to={`/blog/${post.slug}`} className="hover:text-primary transition-colors">
+              <Link to={`/blog/${post.slug}`} key={post.slug} className="flex flex-col h-full">
+                <Card className="flex flex-col h-full border">
+                  <CardHeader>
+                    <h3 className="text-xl font-bold">
                       {post.title}
-                    </Link>
-                  </h3>
-                  <div className="flex items-center gap-4 text-sm text-muted-foreground mt-2">
-                    <div className="flex items-center gap-1">
-                      <Calendar className="h-4 w-4" />
-                      <span>{post.date.toDateString()}</span>
+                    </h3>
+                    <div className="flex items-center gap-4 text-sm text-muted-foreground mt-2">
+                      <div className="flex items-center gap-1">
+                        <Calendar className="h-4 w-4" />
+                        <span>{post.date.toDateString()}</span>
+                      </div>
+                      <span>{post.readTime}</span>
                     </div>
-                    <span>{post.readTime}</span>
-                  </div>
-                </CardHeader>
-                <CardContent className="flex-grow">
-                  <p className="text-muted-foreground">{post.excerpt}</p>
-                </CardContent>
-                <CardFooter>
-                  <Button asChild variant="ghost" className="gap-2">
-                    <Link to={`/blog/${post.slug}`}>
-                      Read More <ArrowRight className="h-4 w-4" />
-                    </Link>
-                  </Button>
-                </CardFooter>
-              </Card>
+                  </CardHeader>
+                  <CardContent className="flex-grow">
+                    <p className="text-muted-foreground">{post.excerpt}</p>
+                  </CardContent>
+                </Card>
+              </Link>
             ))}
           </div>
         )}

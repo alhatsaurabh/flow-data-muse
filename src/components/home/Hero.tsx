@@ -112,7 +112,7 @@ const Hero = () => {
               viewport={{ once: true }}
               className="text-3xl md:text-4xl font-bold text-primary"
             >
-              8+
+              4+
             </motion.p>
             <p className="text-sm text-muted-foreground">Years Experience</p>
           </div>
@@ -124,7 +124,7 @@ const Hero = () => {
               viewport={{ once: true }}
               className="text-3xl md:text-4xl font-bold text-primary"
             >
-              50+
+              15+
             </motion.p>
             <p className="text-sm text-muted-foreground">Projects Completed</p>
           </div>
@@ -136,7 +136,7 @@ const Hero = () => {
               viewport={{ once: true }}
               className="text-3xl md:text-4xl font-bold text-primary"
             >
-              30+
+              10+
             </motion.p>
             <p className="text-sm text-muted-foreground">Happy Clients</p>
           </div>
@@ -148,7 +148,7 @@ const Hero = () => {
               viewport={{ once: true }}
               className="text-3xl md:text-4xl font-bold text-primary"
             >
-              15+
+              5+
             </motion.p>
             <p className="text-sm text-muted-foreground">AI Tools</p>
           </div>
