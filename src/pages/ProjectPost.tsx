@@ -8,6 +8,16 @@ import { getCaseStudyBySlug, CaseStudy } from '@/lib/markdown.tsx';
 import { MDXProvider } from '@mdx-js/react';
 // import { MDXRemote } from 'next-mdx-remote'; // Removed next-mdx-remote
 import { useEffect, useState } from 'react';
+import { ChartContainer } from '@/components/ui/chart'; // Import ChartContainer component
+
+// Basic Table component for markdown tables
+const Table = ({ children }: { children: React.ReactNode }) => (
+  <div className="my-4 overflow-x-auto"> {/* Add overflow for responsiveness */}
+    <table>
+      {children}
+    </table>
+  </div>
+);
 
 const components = {
   h1: ({ children }: { children: React.ReactNode }) => (
@@ -48,6 +58,9 @@ const components = {
   pre: ({ children }: { children: React.ReactNode }) => (
     <pre className="bg-muted p-4 rounded-lg overflow-x-auto my-4">{children}</pre>
   ),
+  // Add custom components for MDX
+  Chart: ChartContainer, // Make Shadcn ChartContainer component available as <Chart />
+  table: Table, // Make custom Table component available for markdown tables
 };
 
 const ProjectPost = () => {
@@ -145,7 +158,7 @@ const ProjectPost = () => {
             <p className="text-xl text-muted-foreground mb-6">{project.description}</p>
             <MDXProvider components={components}>
               {/* Render the MDX component directly */}
-              {project.content && <project.content />}
+              {project.content && <project.content components={components} />} {/* Pass components prop */}
             </MDXProvider>
           </div>
 

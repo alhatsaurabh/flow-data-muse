@@ -4,10 +4,23 @@ import React from 'react';
 import ReactMarkdown from 'react-markdown'; // Import ReactMarkdown
 import { ComponentType } from 'react';
 import path from 'path';
+import remarkGfm from 'remark-gfm'; // Import the remark-gfm plugin
 
 // Custom component to render images with responsive styling
 const MarkdownImage = ({ alt, src }: { alt?: string; src?: string }) => {
   return <img src={src} alt={alt} style={{ maxWidth: '100%', height: 'auto' }} />;
+};
+
+// Define components to be used by ReactMarkdown for plain .md files
+const markdownComponents = {
+  img: MarkdownImage, // Use the custom image component
+  table: ({ children }: { children: React.ReactNode }) => ( // Add table component
+    <div className="my-4 overflow-x-auto"> {/* Add overflow for responsiveness */}
+      <table>
+        {children}
+      </table>
+    </div>
+  ),
 };
 
 export interface BlogPost {
@@ -147,12 +160,11 @@ const initializationPromise = (async () => {
               const mdxModule = await import(/* @vite-ignore */ new URL(path.join('/src/posts/blog', `${slug}.mdx`), import.meta.url).toString());
               ContentComponent = mdxModule.default;
             } else {
-              // For plain markdown, use ReactMarkdown with custom image component
+              // For plain markdown, use ReactMarkdown with custom image component and table support
               ContentComponent = () => React.createElement(ReactMarkdown, {
                 children: content,
-                components: {
-                  img: MarkdownImage,
-                },
+                components: markdownComponents, // Use the defined markdown components
+                remarkPlugins: [remarkGfm], // Add remark-gfm plugin
               });
             }
 
@@ -221,9 +233,8 @@ const initializationPromise = (async () => {
 
               ContentComponent = () => React.createElement(ReactMarkdown, {
                 children: content,
-                components: {
-                  img: MarkdownImage,
-                },
+                components: markdownComponents, // Use the defined markdown components
+                remarkPlugins: [remarkGfm], // Add remark-gfm plugin
               });
             }
 

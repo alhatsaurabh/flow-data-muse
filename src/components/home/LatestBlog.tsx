@@ -16,7 +16,7 @@ const LatestBlog = () => {
       try {
         setLoading(true);
         const blogPosts = await getBlogPosts();
-        setPosts(blogPosts.slice(0, 3)); // Get only the latest 3 posts
+        setPosts(blogPosts.slice(0, 2)); // Get only the latest 2 posts
       } catch (err) {
         console.error('Error fetching latest blog posts:', err);
         setError('Failed to load latest blog posts');
