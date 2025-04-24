@@ -7,9 +7,10 @@ tags:
   - Analytics
   - Sample
 category: Data Analytics
-github: https://github.com/example/sample-project
-liveDemo: https://example.com/demo
+github: ""
+liveDemo: ""
 featured: true
+draft: false
 ---
 
 # Sample Data Analysis Project
