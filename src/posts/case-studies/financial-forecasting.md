@@ -10,7 +10,7 @@ tags:
 category: financial
 github: ""
 liveDemo: ""
-featured: false
+featured: true
 draft: false
 slug: financial-forecasting
 ---
