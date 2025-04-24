@@ -9,16 +9,6 @@ import { MDXProvider } from '@mdx-js/react';
 // import { MDXRemote } from 'next-mdx-remote'; // Removed next-mdx-remote
 import { useEffect, useState } from 'react';
 import { BlogPost as BlogPostType } from '@/lib/markdown';
-import { ChartContainer } from '@/components/ui/chart'; // Import ChartContainer component
-
-// Basic Table component for markdown tables
-const Table = ({ children }: { children: React.ReactNode }) => (
-  <div className="my-4 overflow-x-auto"> {/* Add overflow for responsiveness */}
-    <table>
-      {children}
-    </table>
-  </div>
-);
 
 const components = {
   h1: ({ children }: { children: React.ReactNode }) => (
@@ -59,9 +49,6 @@ const components = {
   pre: ({ children }: { children: React.ReactNode }) => (
     <pre className="bg-muted p-4 rounded-lg overflow-x-auto my-4">{children}</pre>
   ),
-  // Add custom components for MDX
-  Chart: ChartContainer, // Make Shadcn ChartContainer component available as <Chart />
-  table: Table, // Make custom Table component available for markdown tables
 };
 
 const BlogPost = () => {
@@ -161,7 +148,7 @@ const BlogPost = () => {
           <div className="prose prose-lg dark:prose-invert max-w-none">
             <MDXProvider components={components}>
               {/* Render the MDX component directly */}
-              {post.content && <post.content components={components} />} {/* Pass components prop */}
+              {post.content && <post.content />}
             </MDXProvider>
           </div>
         </div>
@@ -170,4 +157,4 @@ const BlogPost = () => {
   );
 };
 
-export default BlogPost; 
+export default BlogPost;
