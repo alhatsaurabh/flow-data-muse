@@ -34,6 +34,7 @@ export interface BlogPost {
   tags?: string[];
   featured?: boolean;
   draft?: boolean; // Add draft property
+  displayOnHomepage?: boolean; // Add field to control homepage display
 }
 
 export interface CaseStudy {
@@ -192,7 +193,8 @@ const initializationPromise = (async () => {
               content: ContentComponent,
               tags: otherFrontmatter.tags || [],
               featured: otherFrontmatter.featured || false,
-              draft: otherFrontmatter.draft || false // Include draft property
+              draft: otherFrontmatter.draft || false, // Include draft property
+              displayOnHomepage: otherFrontmatter.displayOnHomepage === undefined ? true : otherFrontmatter.displayOnHomepage // Include displayOnHomepage property, default to true
             };
           } catch (error) {
             console.error(`Error processing blog post ${slug}:`, error);
@@ -294,10 +296,10 @@ const initializationPromise = (async () => {
 // Export functions that await the initialization promise
 export async function getBlogPosts(): Promise<BlogPost[]> {
   const { blogPosts } = await initializationPromise;
-  // Filter out draft posts
-  const publishedBlogPosts = blogPosts.filter(post => !post.draft);
+  // Filter out draft posts and those not marked for homepage display
+  const publishedAndHomepagePosts = blogPosts.filter(post => !post.draft && post.displayOnHomepage !== false);
   // Ensure we don't return just the sample if there are other posts
-  return publishedBlogPosts.length > 0 ? publishedBlogPosts : [sampleBlogPost];
+  return publishedAndHomepagePosts.length > 0 ? publishedAndHomepagePosts : [sampleBlogPost];
 }
 
 export async function getCaseStudies(): Promise<CaseStudy[]> {
@@ -310,13 +312,15 @@ export async function getCaseStudies(): Promise<CaseStudy[]> {
 
 export async function getFeaturedBlogPosts(): Promise<BlogPost[]> {
   const { blogPosts } = await initializationPromise;
-  const featured = blogPosts.filter(post => post.featured && post.slug !== 'sample-blog-post' && !post.draft); // Filter out drafts
+  // Filter out drafts, sample post, and those not marked for homepage display
+  const featured = blogPosts.filter(post => post.featured && post.slug !== 'sample-blog-post' && !post.draft && post.displayOnHomepage !== false);
   return featured.length > 0 ? featured : [];
 }
 
 export async function getBlogPostBySlug(slug: string): Promise<BlogPost | undefined> {
   const { blogPosts } = await initializationPromise;
-  const post = blogPosts.find(post => post.slug === slug && !post.draft); // Find only published post
+  // Find the post by slug, regardless of draft or homepage display status
+  const post = blogPosts.find(post => post.slug === slug);
   return post || (slug === 'sample-blog-post' ? sampleBlogPost : undefined);
 }
 

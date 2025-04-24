@@ -36,5 +36,6 @@ collections:
       - { label: "Excerpt", name: "excerpt", widget: "text" }
       - { label: "Tags", name: "tags", widget: "list" }
       - { label: "Featured", name: "featured", widget: "boolean", default: false, required: false }
+      - { label: "Display on Homepage", name: "displayOnHomepage", widget: "boolean", default: true, required: false } # Add field to control homepage display
       - { label: "Draft", name: "draft", widget: "boolean", default: false, required: false } # Add draft field
       - { label: "Content", name: "body", widget: "markdown" }
