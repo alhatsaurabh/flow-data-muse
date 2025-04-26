@@ -10,7 +10,7 @@ tags:
 category: marketing
 github: ""
 liveDemo: ""
-featured: true
+featured: false
 draft: false
 slug: marketing-analysis
 ---
