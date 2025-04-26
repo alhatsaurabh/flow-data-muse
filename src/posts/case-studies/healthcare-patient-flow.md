@@ -7,7 +7,7 @@ image: /images/gettyimages-1558703841-612x612.jpg
 tags:
   - R
   - Tableau
-  - Healthcare Analytics
+  - Visualisation
 category: Aviation
 github: ""
 liveDemo: https://public.tableau.com/views/Book1_17428894334940/Dashboard1?:language=en-US&:sid=&:redirect=auth&:display_count=n&:origin=viz_share_link
