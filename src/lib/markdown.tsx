@@ -37,6 +37,18 @@ export interface BlogPost {
   displayOnHomepage?: boolean; // Add field to control homepage display
 }
 
+// Define interface for searchable content - Updated to include 'about'
+export interface SearchableContent {
+  slug: string;
+  title: string;
+  excerpt?: string;
+  description?: string; // For case studies
+  content: string; // Include raw markdown content for searching
+  tags?: string[];
+  category?: string; // For case studies
+  type: 'blog' | 'case-study' | 'about'; // Added 'about' type, removed 'cv'
+}
+
 export interface CaseStudy {
   id: number;
   title: string;
@@ -65,6 +77,7 @@ const sampleBlogPost: BlogPost = {
   featured: true,
   draft: false // Default sample to not be a draft
 };
+const sampleBlogPostRawContent = "Sample Blog Post Content"; // Raw content for sample
 
 // Sample case study for testing and fallback
 const sampleCaseStudy: CaseStudy = {
@@ -81,15 +94,16 @@ const sampleCaseStudy: CaseStudy = {
   featured: true,
   draft: false // Default sample to not be a draft
 };
+const sampleCaseStudyRawContent = "Sample Case Study Content"; // Raw content for sample
 
 // Use a promise to manage initialization state
 const initializationPromise = (async () => {
   let blogPostModules: Record<string, string> = {};
   let caseStudyModules: Record<string, string> = {};
+  let aboutPageContent = '';
+  // Removed cvContent variable
 
   try {
-    // Make path patterns more flexible to find markdown files in the build
-    // Assuming the MDX plugin exposes default (component) and attributes (frontmatter)
     blogPostModules = import.meta.glob([
       '/src/posts/blog/*.md',
       '/src/posts/blog/*.mdx',
@@ -100,7 +114,6 @@ const initializationPromise = (async () => {
       '/src/posts/case-studies/*.mdx',
     ], { eager: true, as: 'raw' });
 
-    // Add debug logging
     console.log('Blog post modules available:', Object.keys(blogPostModules).length);
     console.log('Case study modules available:', Object.keys(caseStudyModules).length);
     console.log('Blog post modules paths:', Object.keys(blogPostModules));
@@ -108,13 +121,36 @@ const initializationPromise = (async () => {
 
   } catch (error) {
     console.error('Error initializing modules:', error);
-    // Leave the modules as empty objects
   }
 
+  // Fetch About page content
+  try {
+    const aboutPageModule = await import(/* @vite-ignore */ '/src/pages/About.tsx?raw');
+    // Extract relevant text content from the About page component's JSX structure
+    // This is a simplified approach; a more robust method might involve parsing the JSX or rendering it server-side
+    const aboutText = aboutPageModule.default; // Get the raw content string
+    // Simple regex to extract text content (adjust as needed based on About.tsx structure)
+    const extractedAboutText = aboutText.match(/<p[^>]*>([\s\S]*?)<\/p>/g)?.map(p => p.replace(/<[^>]*>/g, '').trim()).join(' ') || '';
+    const skillsText = aboutText.match(/name: '(.*?)',.*?level: (\d+)/g)?.map(m => m.replace(/name: '(.*?)',.*?level: (\d+)/, '$1 ($2%)')).join(', ') || '';
+    const experienceText = aboutText.match(/role: '(.*?)',.*?company: '(.*?)',.*?period: '(.*?)',.*?description: '(.*?)'/g)?.map(m => m.replace(/role: '(.*?)',.*?company: '(.*?)',.*?period: '(.*?)',.*?description: '(.*?)'/, '$1 at $2 ($3): $4')).join('; ') || '';
+    const educationText = aboutText.match(/degree: '(.*?)',.*?institution: '(.*?)',.*?year: '(.*?)'/g)?.map(m => m.replace(/degree: '(.*?)',.*?institution: '(.*?)',.*?year: '(.*?)'/, '$1 from $2 ($3)')).join('; ') || '';
+    const certificationsText = aboutText.match(/certifications = \[(.*?)\];/s)?.[1].replace(/['"\s]/g, '').split(',').filter(Boolean).join(', ') || '';
+
+    aboutPageContent = `${extractedAboutText} Skills: ${skillsText} Experience: ${experienceText} Education: ${educationText} Certifications: ${certificationsText}`;
+
+    console.log('About page content extracted from About.tsx'); // Log successful extraction
+  } catch (error) {
+    console.error('Error fetching About page content:', error);
+  }
+
+  // Removed Fetch CV PDF content block
+
+
+  // Updated processMarkdownFiles function
   async function processMarkdownFiles<T>(
     modules: Record<string, string>,
-    processData: (slug: string, module: string, index?: number) => Promise<T | null> // Return T or null
-  ): Promise<T[]> {
+    processData: (slug: string, rawContent: string, index?: number) => Promise<{ data: T; rawContent: string } | null>
+  ): Promise<{ data: T; rawContent: string }[]> {
     if (Object.keys(modules).length === 0) {
       console.warn('No modules found for processing');
       return [];
@@ -123,15 +159,14 @@ const initializationPromise = (async () => {
     console.log('Processing markdown files, paths:', Object.keys(modules));
 
     const results = await Promise.all(
-      Object.entries(modules).map(async ([path, module], index) => {
-        // Extract slug from any path pattern
-        const slug = path.split('/').pop()?.replace(/\.(md|mdx)$/, '') || ''; // Handle both .md and .mdx
-        console.log('Processing file:', path, 'with slug:', slug);
-        return processData(slug, module, index);
+      Object.entries(modules).map(async ([filePath, rawContent], index) => {
+        const slug = filePath.split('/').pop()?.replace(/\.(md|mdx)$/, '') || '';
+        console.log('Processing file:', filePath, 'with slug:', slug);
+        return processData(slug, rawContent, index); // Pass rawContent directly
       })
     );
-    // Filter out any null results from failed processing
-    const validResults: T[] = [];
+
+    const validResults: { data: T; rawContent: string }[] = [];
     for (const result of results) {
       if (result !== null) {
         validResults.push(result);
@@ -144,114 +179,116 @@ const initializationPromise = (async () => {
     console.log('Initializing markdown processing...');
 
     // Process blog posts
-    let blogPosts: BlogPost[] = [];
+    let processedBlogPosts: { data: BlogPost; rawContent: string }[] = [];
     if (Object.keys(blogPostModules).length > 0) {
-      blogPosts = await processMarkdownFiles<BlogPost>(
+      processedBlogPosts = await processMarkdownFiles<BlogPost>(
         blogPostModules,
         async (slug, rawContent) => {
           try {
             const parsedMarkdown = matter(rawContent);
             const frontmatter = parsedMarkdown.data;
-            const content = parsedMarkdown.content;
+            const contentBody = parsedMarkdown.content; // Store the body
 
             let ContentComponent: React.ComponentType<any> | undefined;
 
+            // Handle MDX vs MD for component creation
             if (slug.endsWith('.mdx')) {
                // Dynamically import the MDX file to get the component
-              const mdxModule = await import(/* @vite-ignore */ new URL(path.join('/src/posts/blog', `${slug}.mdx`), import.meta.url).toString());
+               // Ensure the path is correct relative to the project root for dynamic import
+              const mdxModule = await import(/* @vite-ignore */ `/src/posts/blog/${slug}.mdx`);
               ContentComponent = mdxModule.default;
             } else {
-              // For plain markdown, use ReactMarkdown with custom image component and table support
+              // For plain markdown, use ReactMarkdown
               ContentComponent = () => React.createElement(ReactMarkdown, {
-                children: content,
-                components: markdownComponents, // Use the defined markdown components
-                remarkPlugins: [remarkGfm], // Add remark-gfm plugin
+                children: contentBody,
+                components: markdownComponents,
+                remarkPlugins: [remarkGfm],
               });
             }
 
-
-            // Basic validation: check for a title and content component
             if (!frontmatter.title || !ContentComponent) {
               console.warn(`Skipping blog post ${slug} due to missing title or content component.`);
-              return null; // Return null if essential data is missing
+              return null;
             }
 
-            // Calculate read time based on word count (assuming 200 words per minute)
-            const wordCount = content.split(/\s+/).length;
+            const wordCount = contentBody.split(/\s+/).length;
             const readTimeMinutes = Math.ceil(wordCount / 200);
             const readTime = `${readTimeMinutes} min read`;
 
-
-            const { date, ...otherFrontmatter } = frontmatter; // Destructure date
-            return {
+            const { date, ...otherFrontmatter } = frontmatter;
+            const blogPostData: BlogPost = {
               slug,
               title: otherFrontmatter.title,
-              date: date ? new Date(date) : new Date(), // Store as Date object
-              readTime: readTime, // Use calculated read time
+              date: date ? new Date(date) : new Date(),
+              readTime: readTime,
               imageUrl: otherFrontmatter.imageUrl || 'https://via.placeholder.com/800x400',
-              excerpt: otherFrontmatter.excerpt || 'No excerpt available',
+              excerpt: otherFrontmatter.excerpt || contentBody.substring(0, 150) + '...', // Generate excerpt if missing
               content: ContentComponent,
               tags: otherFrontmatter.tags || [],
               featured: otherFrontmatter.featured || false,
-              draft: otherFrontmatter.draft || false, // Include draft property
-              displayOnHomepage: otherFrontmatter.displayOnHomepage === undefined ? true : otherFrontmatter.displayOnHomepage // Include displayOnHomepage property, default to true
+              draft: otherFrontmatter.draft || false,
+              displayOnHomepage: otherFrontmatter.displayOnHomepage === undefined ? true : otherFrontmatter.displayOnHomepage
             };
+            // Return object with data and the raw markdown body content
+            return { data: blogPostData, rawContent: contentBody };
           } catch (error) {
             console.error(`Error processing blog post ${slug}:`, error);
-            return null; // Return null on error
+            return null;
           }
         }
       );
     }
 
-    // If no blog posts found after processing and filtering, use sample
-    if (blogPosts.length === 0) {
+    let blogPosts: BlogPost[] = processedBlogPosts.map(p => p.data);
+    if (blogPosts.length === 0 && Object.keys(blogPostModules).length === 0) { // Check if modules were empty too
       console.log('No valid blog posts found, using sample');
       blogPosts = [sampleBlogPost];
+      processedBlogPosts = [{ data: sampleBlogPost, rawContent: sampleBlogPostRawContent }];
     }
+    const sortedProcessedBlogPosts = processedBlogPosts.sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+    const sortedBlogPosts = sortedProcessedBlogPosts.map(p => p.data); // Get sorted BlogPost data
 
-    const sortedBlogPosts = blogPosts.sort((a, b) => b.date.getTime() - a.date.getTime());
-
-    // Process case studies using the same robust approach as blog posts
-    let caseStudies: CaseStudy[] = [];
+    // Process case studies
+    let processedCaseStudies: { data: CaseStudy; rawContent: string }[] = [];
     if (Object.keys(caseStudyModules).length > 0) {
-      caseStudies = await processMarkdownFiles<CaseStudy>(
+      processedCaseStudies = await processMarkdownFiles<CaseStudy>(
         caseStudyModules,
-        async (slug, module, index) => {
+        async (slug, rawContent, index) => {
           try {
-            let frontmatter: any = {};
+            const parsedMarkdown = matter(rawContent); // Parse frontmatter and content
+            const frontmatter = parsedMarkdown.data;
+            const contentBody = parsedMarkdown.content; // Store the body
+
             let ContentComponent: React.ComponentType<any> | undefined;
-            let content = '';
+            let searchableRawContent = contentBody; // Default searchable content is the body
 
             if (slug.endsWith('.mdx')) {
-              const mdxModule = await import(/* @vite-ignore */ new URL(module, import.meta.url).toString());
+              // Dynamically import the MDX file to get the component
+              const mdxModule = await import(/* @vite-ignore */ `/src/posts/case-studies/${slug}.mdx`);
               ContentComponent = mdxModule.default;
-              frontmatter = mdxModule.attributes;
+              // If MDX body is empty, use description for search
+              if (!searchableRawContent.trim() && frontmatter.description) {
+                searchableRawContent = frontmatter.description;
+              }
             } else {
-              // It's a plain .md file, process with gray-matter and react-markdown
-              const parsedMarkdown = matter(module);
-              frontmatter = parsedMarkdown.data;
-              content = parsedMarkdown.content;
-
+              // For plain markdown, use ReactMarkdown
               ContentComponent = () => React.createElement(ReactMarkdown, {
-                children: content,
-                components: markdownComponents, // Use the defined markdown components
-                remarkPlugins: [remarkGfm], // Add remark-gfm plugin
+                children: contentBody,
+                components: markdownComponents,
+                remarkPlugins: [remarkGfm],
               });
             }
 
-            // Basic validation: check for a title and content component
             if (!frontmatter.title || !ContentComponent) {
               console.warn(`Skipping case study ${slug} due to missing title or content component.`);
-              return null; // Return null on error
+              return null;
             }
 
-            const { date, ...otherFrontmatter } = frontmatter; // Destructure date
-
-            return {
+            const { date, ...otherFrontmatter } = frontmatter; // Destructure date (if present)
+            const caseStudyData: CaseStudy = {
               id: index !== undefined ? index + 1 : 0,
               title: otherFrontmatter.title,
-              description: otherFrontmatter.description || 'No description available',
+              description: otherFrontmatter.description || contentBody.substring(0, 150) + '...', // Generate description if missing
               image: otherFrontmatter.image || 'https://via.placeholder.com/800x400',
               tags: otherFrontmatter.tags || ['Sample'],
               category: otherFrontmatter.category || 'General',
@@ -260,72 +297,122 @@ const initializationPromise = (async () => {
               liveDemo: otherFrontmatter.liveDemo,
               content: ContentComponent,
               featured: otherFrontmatter.featured === true || otherFrontmatter.featured === 'true',
-              draft: otherFrontmatter.draft || false // Include draft property
+              draft: otherFrontmatter.draft || false
             };
+            // Return object with data and the raw content for searching
+            return { data: caseStudyData, rawContent: searchableRawContent };
           } catch (error) {
             console.error(`Error processing case study ${slug}:`, error);
-            return null; // Return null on error
+            return null;
           }
         }
       );
     }
 
-    // If no case studies found after processing and filtering, use sample
-    if (caseStudies.length === 0) {
+    let caseStudies: CaseStudy[] = processedCaseStudies.map(p => p.data);
+    if (caseStudies.length === 0 && Object.keys(caseStudyModules).length === 0) { // Check if modules were empty too
       console.log('No valid case studies found, using sample');
       caseStudies = [sampleCaseStudy];
+      processedCaseStudies = [{ data: sampleCaseStudy, rawContent: sampleCaseStudyRawContent }];
     }
 
     console.log('Markdown initialization complete. Blog posts:', sortedBlogPosts.length, 'Case studies:', caseStudies.length);
 
+    // Create searchable index including About page content
+    const searchableContent: SearchableContent[] = [
+      ...sortedProcessedBlogPosts.map(item => ({
+        slug: item.data.slug,
+        title: item.data.title,
+        excerpt: item.data.excerpt,
+        content: item.rawContent, // Use stored rawContent (markdown body)
+        tags: item.data.tags,
+        type: 'blog' as const,
+      })),
+      ...processedCaseStudies.map(item => ({
+        slug: item.data.slug,
+        title: item.data.title,
+        description: item.data.description,
+        content: item.rawContent, // Use stored rawContent (body or description)
+        tags: item.data.tags,
+        category: item.data.category,
+        type: 'case-study' as const,
+      })),
+      // Add About page content to the index
+      {
+        slug: 'about', // Unique slug for the about page
+        title: 'About Saurabh',
+        content: aboutPageContent,
+        type: 'about' as const,
+      },
+      // Removed CV content from the index
+    ];
+
+    console.log('Searchable content index created. Items:', searchableContent.length);
+    console.log('Searchable content index sample:', searchableContent.slice(0, 5)); // Log a sample including new types
+
     return {
       blogPosts: sortedBlogPosts,
       caseStudies: caseStudies,
+      searchableContent: searchableContent,
     };
 
   } catch (error) {
     console.error('Error during markdown initialization:', error);
-    // Return sample data instead of failing completely
+    // Return minimal structure on error
     return {
       blogPosts: [sampleBlogPost],
       caseStudies: [sampleCaseStudy],
+      searchableContent: [], // Return empty array on error
     };
   }
 })();
 
 // Export functions that await the initialization promise
+export async function getSearchableContent(): Promise<SearchableContent[]> {
+ const result = await initializationPromise;
+ // Add fallback for case where initialization failed
+ const searchableContent = result?.searchableContent || [];
+ console.log("getSearchableContent called. Index size:", searchableContent.length);
+ return searchableContent;
+}
+
 export async function getBlogPosts(): Promise<BlogPost[]> {
-  const { blogPosts } = await initializationPromise;
+  const result = await initializationPromise;
+  const blogPosts = result?.blogPosts || [sampleBlogPost];
   // Filter out draft posts and those not marked for homepage display
-  const publishedAndHomepagePosts = blogPosts.filter(post => !post.draft && post.displayOnHomepage !== false);
-  // Ensure we don't return just the sample if there are other posts
-  return publishedAndHomepagePosts.length > 0 ? publishedAndHomepagePosts : [sampleBlogPost];
+  const publishedAndHomepagePosts = blogPosts.filter(post => !post.draft && post.displayOnHomepage !== false && post.slug !== 'sample-blog-post');
+  // Return published or sample if none are published
+  return publishedAndHomepagePosts.length > 0 ? publishedAndHomepagePosts : (blogPosts.some(p => p.slug === 'sample-blog-post') ? [sampleBlogPost] : []);
 }
 
 export async function getCaseStudies(): Promise<CaseStudy[]> {
-  const { caseStudies } = await initializationPromise;
+  const result = await initializationPromise;
+  const caseStudies = result?.caseStudies || [sampleCaseStudy];
   // Filter out draft case studies
-  const publishedCaseStudies = caseStudies.filter(study => !study.draft);
-   // Ensure we don't return just the sample if there are other posts
-  return publishedCaseStudies.length > 0 ? publishedCaseStudies : [sampleCaseStudy];
+  const publishedCaseStudies = caseStudies.filter(study => !study.draft && study.slug !== 'sample-case-study');
+   // Return published or sample if none are published
+  return publishedCaseStudies.length > 0 ? publishedCaseStudies : (caseStudies.some(p => p.slug === 'sample-case-study') ? [sampleCaseStudy] : []);
 }
 
 export async function getFeaturedBlogPosts(): Promise<BlogPost[]> {
-  const { blogPosts } = await initializationPromise;
+  const result = await initializationPromise;
+  const blogPosts = result?.blogPosts || [sampleBlogPost];
   // Filter out drafts, sample post, and those not marked for homepage display
   const featured = blogPosts.filter(post => post.featured && post.slug !== 'sample-blog-post' && !post.draft && post.displayOnHomepage !== false);
-  return featured.length > 0 ? featured : [];
+  return featured; // Return empty array if none featured
 }
 
 export async function getBlogPostBySlug(slug: string): Promise<BlogPost | undefined> {
-  const { blogPosts } = await initializationPromise;
+  const result = await initializationPromise;
+  const blogPosts = result?.blogPosts || [sampleBlogPost];
   // Find the post by slug, regardless of draft or homepage display status
   const post = blogPosts.find(post => post.slug === slug);
-  return post || (slug === 'sample-blog-post' ? sampleBlogPost : undefined);
+  return post; // Return post or undefined
 }
 
 export async function getCaseStudyBySlug(slug: string): Promise<CaseStudy | undefined> {
-  const { caseStudies } = await initializationPromise;
+  const result = await initializationPromise;
+  const caseStudies = result?.caseStudies || [sampleCaseStudy];
   const study = caseStudies.find(study => study.slug === slug && !study.draft); // Find only published study
-  return study || (slug === 'sample-case-study' ? sampleCaseStudy : undefined);
+  return study; // Return study or undefined
 }
