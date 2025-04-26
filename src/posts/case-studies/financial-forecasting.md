@@ -2,7 +2,7 @@
 title: "Product Performance Dashboard: E-commerce Analytics"
 description: Analyzed product performance through a dashboard for an e-commerce
   business to derive actionable insights.
-image: https://images.unsplash.com/photo-1543286386-713bdd548da4?q=80&w=2070
+image: /images/gettyimages-1281476617-612x612.jpg
 tags:
   - E-commerce
   - Product
