@@ -48,7 +48,7 @@ function tokenizeAndFilter(text: string): string[] {
   // Strip markdown first
   let cleanedText = stripMarkdown(text);
   // Convert to lowercase and remove punctuation
-  cleanedText = cleanedText.toLowerCase().replace(/[.,!?;:"'(){}[\]]/g, '');
+  cleanedText = cleanedText.toLowerCase().replace(/[.,!?;:\"\'(){}[\\]]/g, '');
   // Split into words and filter out stop words and empty strings
   return cleanedText.split(/\s+/).filter(word => word.length > 0 && !stopWords.has(word));
 }
@@ -161,7 +161,8 @@ export async function answerQuestion(query: string): Promise<ChatbotResponse> { 
     }
   }
 
-  if (lowerQuery.includes("tell me about a case study")) {
+  // Modify this condition to include 'projects' related phrases
+  if (lowerQuery.includes("tell me about a case study") || lowerQuery.includes("tell me about a project") || lowerQuery.includes("show me projects") || lowerQuery.includes("show me case studies")) {
     const caseStudies = await getCaseStudies();
     if (caseStudies.length > 0) {
       // Return a random case study for variety
@@ -184,7 +185,21 @@ export async function answerQuestion(query: string): Promise<ChatbotResponse> { 
   console.log("Chatbot content index size:", contentIndex.length); // Log index size
   console.log("Chatbot content index:", contentIndex); // Log index content (for debugging)
 
-  const queryTokens = tokenizeAndFilter(query);
+
+  // Modify query to include 'case studies' if 'projects' is mentioned for general search fallback
+   let processedQuery = query;
+   if (lowerQuery.includes('projects') && !lowerQuery.includes('case studies')) {
+     processedQuery = query + ' case studies';
+   } else if (lowerQuery.includes('case studies') && !lowerQuery.includes('projects')) {
+     processedQuery = query + ' projects';
+   } else if (lowerQuery.includes('projects') && lowerQuery.includes('case studies')) {
+     // If both are already there, no need to append
+     processedQuery = query;
+   }
+
+
+  const queryTokens = tokenizeAndFilter(processedQuery);
+
 
   // Calculate relevance score for each content item
   const scoredContent = contentIndex.map(item => {
@@ -217,11 +232,13 @@ export async function answerQuestion(query: string): Promise<ChatbotResponse> { 
   // Define a minimum score threshold (adjust as needed)
   const MIN_SCORE_THRESHOLD = 2; // Require a minimum score of 2
 
+
   // Filter out items with a score below the threshold and sort by score descending
   const relevantContent = scoredContent
     .filter(scoredItem => scoredItem.score >= MIN_SCORE_THRESHOLD) // Filter by threshold
     .sort((a, b) => b.score - a.score)
     .map(scoredItem => scoredItem.item); // Get back the original item
+
 
   if (relevantContent.length > 0) {
     // Return structured data for relevant content
@@ -253,3 +270,9 @@ export async function answerQuestion(query: string): Promise<ChatbotResponse> { 
     return notFoundResponses[Math.floor(Math.random() * notFoundResponses.length)];
   }
 }
+
+// Note: This function is defined in src/lib/markdown.tsx but used here.
+// Assuming getSearchableContent is correctly imported or available in the environment.
+declare const getSearchableContent: () => Promise<SearchableContent[]>;
+declare const getBlogPosts: () => Promise<any[]>; // Replace 'any' with actual Blog Post type if available
+declare const getCaseStudies: () => Promise<any[]>; // Replace 'any' with actual Case Study type if available
