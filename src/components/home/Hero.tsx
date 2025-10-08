@@ -88,7 +88,7 @@ const Hero = () => {
           className="flex flex-col sm:flex-row gap-4 mb-16"
         >
           <Button asChild size="lg" className="gap-2">
-            <a href="/downloads/Saurabh Alhat CV 2025.pdf" download="Saurabh Alhat CV 2025.pdf">
+            <a href="/documents/saurabh-alhat-cv.pdf" download="Saurabh_Alhat_CV_2025.pdf">
               Download CV <Download className="h-4 w-4" />
             </a>
           </Button>
